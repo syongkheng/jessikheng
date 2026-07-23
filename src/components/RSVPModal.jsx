@@ -227,10 +227,10 @@ function RSVPModal({ open, onClose }) {
   const [infoMessage, setInfoMessage] = useState('')
   const rsvpPhoto = photos[0]
 
-  // Recomputed from current state so Back/Next always reflect the live
-  // answer to "attending" — e.g. going back to step 1 and switching from
-  // yes to no correctly collapses the flow to 2 steps.
-  const steps = form.attending === 'no' ? ['details', 'message'] : ['details', 'event', 'message']
+  // Always all three steps — even when attending is "no" or an edited
+  // RSVP has no additional guests — so the Event step (and its guest
+  // stepper) never disappears from the wizard.
+  const steps = ['details', 'event', 'message']
   const stepName = steps[Math.min(currentStep, steps.length - 1)]
   const stepLabels = { details: t('rsvp.stepDetails'), event: t('rsvp.stepEvent'), message: t('rsvp.stepMessage') }
 
