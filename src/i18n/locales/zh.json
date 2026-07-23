@@ -1,0 +1,75 @@
+{
+  "common": {
+    "scanToView": "扫码在手机上打开"
+  },
+  "hero": {
+    "welcome": "欢迎光临",
+    "invitationLabel": "婚礼邀请函",
+    "coupleNameOne": "Jessica",
+    "coupleNameTwo": "Yong Kheng",
+    "rsvpCta": "立即回复"
+  },
+  "venue": {
+    "heading": "婚宴地点"
+  },
+  "countdown": {
+    "heading": "倒数计时",
+    "days": "天",
+    "hours": "时",
+    "minutes": "分",
+    "seconds": "秒",
+    "married": "我们结婚了！"
+  },
+  "story": {
+    "heading": "我们的故事",
+    "paragraph1": "我们在一个雨天相遇，从此聊个不停。一次偶然的对话，渐渐变成了多年的欢笑、冒险，和无数个安静的周日清晨。",
+    "paragraph2": "无论季节如何变换，我们最喜欢的地方始终是彼此身旁。现在，我们迫不及待想在最爱的人们的见证下，开启人生的下一个篇章。"
+  },
+  "gallery": {
+    "heading": "美好时光"
+  },
+  "rsvp": {
+    "heading": "回复邀请",
+    "deadlineLabel": "敬请于以下日期前回复",
+    "deadlineDate": "2027年2月1日",
+    "stepIndicator": "第 {{current}} 步，共 {{total}} 步",
+    "stepDetails": "资料",
+    "stepEvent": "详情",
+    "stepMessage": "留言",
+    "back": "上一步",
+    "next": "下一步",
+    "yourDetailsHeading": "您的资料",
+    "nameLabel": "姓名",
+    "emailLabel": "电子邮箱",
+    "contactNumberLabel": "联络电话（选填）",
+    "attendingLabel": "您是否出席？",
+    "attendingYes": "欣然应邀",
+    "attendingNo": "抱歉缺席",
+    "dietaryRestrictionsLabel": "饮食禁忌（选填）",
+    "mealLabel": "餐食偏好（选填）",
+    "mealRegular": "普通餐",
+    "mealVegetarian": "素食",
+    "mealVegan": "纯素",
+    "mealHalal": "清真",
+    "additionalGuestsHeading": "同行嘉宾",
+    "additionalGuestsLabel": "是否携同其他嘉宾？请使用按钮添加",
+    "guestNameLabel": "嘉宾 {{number}} 姓名",
+    "messageLabel": "给新人的祝福留言（选填）",
+    "submit": "提交回复",
+    "submitting": "提交中…",
+    "successMessage": "谢谢你，{{name}}！我们已收到您的回复。",
+    "resubmit": "再次提交",
+    "submitError": "提交回复时发生错误，请稍后再试。",
+    "foundExisting": "欢迎回来！我们已载入您先前的回复，欢迎更新。",
+    "errors": {
+      "nameRequired": "请输入姓名",
+      "emailRequired": "请输入电子邮箱",
+      "emailInvalid": "请输入有效的电子邮箱地址",
+      "attendingRequired": "请告诉我们您是否能出席",
+      "guestNameRequired": "请输入该嘉宾的姓名"
+    }
+  },
+  "footer": {
+    "tagline": "我们迫不及待想与您共同庆祝。"
+  }
+}

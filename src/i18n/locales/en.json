@@ -1,0 +1,75 @@
+{
+  "common": {
+    "scanToView": "Scan to open on your phone"
+  },
+  "hero": {
+    "welcome": "Welcome",
+    "invitationLabel": "The Wedding Invitation",
+    "coupleNameOne": "Jessica",
+    "coupleNameTwo": "Yong Kheng",
+    "rsvpCta": "RSVP Now"
+  },
+  "venue": {
+    "heading": "Venue"
+  },
+  "countdown": {
+    "heading": "Counting Down",
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "married": "We're married!"
+  },
+  "story": {
+    "heading": "Our Story",
+    "paragraph1": "We met on a rainy afternoon and haven't stopped talking since. What started as a chance conversation grew into years of laughter, adventure, and quiet Sunday mornings together.",
+    "paragraph2": "Through every season, we've found our favorite place is simply beside each other. Now we can't wait to begin our next chapter surrounded by the people we love most."
+  },
+  "gallery": {
+    "heading": "Our Moments"
+  },
+  "rsvp": {
+    "heading": "RSVP",
+    "deadlineLabel": "Kindly respond by",
+    "deadlineDate": "1 February 2027",
+    "stepIndicator": "Step {{current}} of {{total}}",
+    "stepDetails": "Details",
+    "stepEvent": "Event",
+    "stepMessage": "Message",
+    "back": "Back",
+    "next": "Next",
+    "yourDetailsHeading": "Your Details",
+    "nameLabel": "Full name",
+    "emailLabel": "Email",
+    "contactNumberLabel": "Contact number (optional)",
+    "attendingLabel": "Will you be attending?",
+    "attendingYes": "Joyfully accepts",
+    "attendingNo": "Regretfully declines",
+    "dietaryRestrictionsLabel": "Dietary restrictions (optional)",
+    "mealLabel": "Meal preference (optional)",
+    "mealRegular": "Regular",
+    "mealVegetarian": "Vegetarian",
+    "mealVegan": "Vegan",
+    "mealHalal": "Halal",
+    "additionalGuestsHeading": "Additional Guests",
+    "additionalGuestsLabel": "Bringing anyone else? Use the buttons to add guests",
+    "guestNameLabel": "Guest {{number}} name",
+    "messageLabel": "Message for the couple (optional)",
+    "submit": "Send RSVP",
+    "submitting": "Sending…",
+    "successMessage": "Thank you, {{name}}! Your RSVP has been recorded.",
+    "resubmit": "Submit another response",
+    "submitError": "Something went wrong sending your RSVP. Please try again.",
+    "foundExisting": "Welcome back! We've loaded your previous RSVP — feel free to update it.",
+    "errors": {
+      "nameRequired": "Please enter your name",
+      "emailRequired": "Please enter your email",
+      "emailInvalid": "Please enter a valid email address",
+      "attendingRequired": "Please let us know if you can make it",
+      "guestNameRequired": "Please enter this guest's name"
+    }
+  },
+  "footer": {
+    "tagline": "We can't wait to celebrate with you."
+  }
+}
