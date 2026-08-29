@@ -6,7 +6,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(3, 2),
     textAlign: 'center',
-    backgroundColor: theme.palette.primary.dark,
+    // backgroundColor: theme.palette.primary.dark,
     color: theme.palette.primary.contrastText,
   },
   names: {
@@ -20,10 +20,7 @@ function Footer() {
 
   return (
     <Box component="footer" className={classes.root}>
-      <Typography variant="h4" className={classes.names}>
-        {t('hero.coupleNameOne')} &amp; <br></br>{t('hero.coupleNameTwo')}
-      </Typography>
-      <Typography variant="body1">{t('footer.tagline')}</Typography>
+      {/* <Typography variant="body1">{t('footer.tagline')}</Typography> */}
     </Box>
   )
 }

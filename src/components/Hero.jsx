@@ -2,8 +2,7 @@ import { makeStyles } from "@mui/styles";
 import { Box, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import CoupleNames from "./hero/CoupleNames.jsx";
-import WeddingDate from "./hero/WeddingDate.jsx";
-import RsvpCta from "./hero/RsvpCta.jsx";
+import WeddingDateVenue from "./hero/WeddingDateVenue.jsx";
 import LanguageSwitcher from "./LanguageSwitcher.jsx";
 import FloralSprig from "./decor/FloralSprig.jsx";
 import LazyImage from "./LazyImage.jsx";
@@ -14,11 +13,56 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     textAlign: "center",
   },
+  welcome: {
+    fontWeight: 600,
+    letterSpacing: "0.2em",
+    textTransform: "uppercase",
+    fontSize: "0.85rem",
+  },
   languageSwitcher: {
     position: "absolute",
     top: theme.spacing(2),
     right: theme.spacing(2),
     zIndex: 3,
+  },
+  // Sits above heroPhoto (zIndex auto) but below languageSwitcher (zIndex 3)
+  // — the couple's names overlapping the top of the background photo,
+  // standing in for a text header.
+  headlineWrap: {
+    position: "absolute",
+    top: theme.spacing(10),
+    left: "50%",
+    transform: "translateX(-50%)",
+    width: "80%",
+    zIndex: 2,
+    pointerEvents: "none",
+    backgroundColor: "rgba(255, 255, 255, 0.35)",
+    padding: theme.spacing(2, 1),
+    borderRadius: theme.shape.borderRadius * 2,
+  },
+  headlineLine: {
+    display: "block",
+    fontSize: "3rem",
+    lineHeight: 1,
+    color: "#2f4f4f",
+    textShadow: "0 2px 10px rgba(0, 0, 0, 0.4)",
+  },
+  // Two static rules picked in JS (not a JSS dynamic prop-function value)
+  // and forced with !important, so the font-family is never left to a
+  // cascade/specificity tie against anything else on the page.
+  headlineLineEn: {
+    fontFamily: '"Moon Dance", cursive !important',
+  },
+  headlineLineZh: {
+    // "Moon Dance" has no CJK glyphs — "Long Cang" (a brush-script CJK
+    // font) takes over when the resolved language is Chinese.
+    fontFamily: '"Zhi Mang Xing", cursive !important',
+  },
+  headlineLineLeft: {
+    textAlign: "left",
+  },
+  headlineLineRight: {
+    textAlign: "right",
   },
   // Grid stacks image/topChip/bottomChip in the same cell, each chip sized
   // to its own content (justifySelf/alignSelf) rather than the full image.
@@ -36,6 +80,8 @@ const useStyles = makeStyles((theme) => ({
   },
   imageCrop: {
     objectFit: "cover",
+    scale: "1.25",
+    transform: "translateX(-30px)",
   },
   topChip: {
     position: "relative",
@@ -70,6 +116,14 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(0.5),
     color: theme.palette.text.secondary,
   },
+  rsvpDate: {
+    color: theme.palette.text.primary,
+    fontWeight: 500,
+  },
+  rsvpVenue: {
+    color: theme.palette.text.primary,
+    fontWeight: 400,
+  },
   bottomChip: {
     position: "relative",
     gridArea: "1 / 1",
@@ -77,9 +131,9 @@ const useStyles = makeStyles((theme) => ({
     justifySelf: "center",
     marginBottom: theme.spacing(1),
     padding: theme.spacing(1.5, 3),
-    borderRadius: theme.shape.borderRadius * 2,
-    backgroundColor: "rgba(245, 245, 220, 0.8)",
-    width: "90%",
+    // borderRadius: theme.shape.borderRadius * 2,
+    // backgroundColor: "rgba(255, 255, 255, 0.5)",
+    // width: "90%",
   },
   bottomChipSprig: {
     position: "absolute",
@@ -92,20 +146,49 @@ const useStyles = makeStyles((theme) => ({
     transform: "rotate(15deg)",
   },
   names: {
-    fontSize: "1.75rem",
+    fontSize: "1.2rem",
   },
 }));
 
 // Reorder these to change the layout of this section.
-function Hero({ onOpenRsvp }) {
+function Hero() {
+  const { t, i18n } = useTranslation();
+  const isZh = i18n.resolvedLanguage === "zh";
   const classes = useStyles();
-  const { t } = useTranslation();
+  const headlineFontClass = isZh
+    ? classes.headlineLineZh
+    : classes.headlineLineEn;
   const heroPhoto = photos[0];
 
   return (
     <Box id="home" component="section" className={classes.root}>
       <Box className={classes.languageSwitcher}>
         <LanguageSwitcher />
+      </Box>
+
+      <Box className={classes.headlineWrap}>
+        {/* Plain Box, not Typography — Typography always applies an MUI
+            variant class (even variant="inherit" is still its own rule,
+            just one that resolves to `font-family: inherit`), which sits at
+            the same CSS specificity as headlineLine and can win the
+            cascade tie depending on injection order. A Box has no
+            competing font-family rule, so headlineLine always applies. */}
+        <Typography variant="body1" className={`${classes.welcome}`}>
+          {t("hero.welcome")}
+        </Typography>
+        <Box
+          component="span"
+          className={`${classes.headlineLine} ${headlineFontClass} ${classes.headlineLineLeft}`}
+        >
+          {t("hero.coupleNameTwo")}
+        </Box>
+        <Box
+          component="span"
+          className={`${classes.headlineLine} ${headlineFontClass} ${classes.headlineLineRight}`}
+        >
+          &amp; {t("hero.coupleNameOne")}
+        </Box>
+        <WeddingDateVenue />
       </Box>
 
       {heroPhoto && (
@@ -118,22 +201,8 @@ function Hero({ onOpenRsvp }) {
             fill
           />
 
-          <Box className={classes.topChip}>
-            <FloralSprig variant="leaf" className={classes.topChipSprig} />
-            <Typography variant="overline" className={classes.eyebrow}>
-              {t("hero.welcome")}
-            </Typography>
-            <Typography variant="body2" className={classes.invitationLabel}>
-              {t("hero.invitationLabel")}
-            </Typography>
-            <WeddingDate />
-          </Box>
-
           <Box className={classes.bottomChip}>
             <FloralSprig variant="bloom" className={classes.bottomChipSprig} />
-            <CoupleNames variant="h3" className={classes.names} />
-
-            <RsvpCta onClick={onOpenRsvp} />
           </Box>
         </Box>
       )}

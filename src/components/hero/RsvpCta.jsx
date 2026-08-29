@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next'
 const useStyles = makeStyles((theme) => ({
   cta: {
     marginTop: theme.spacing(2),
-    width: '200px',
+    width: '250px',
+    backgroundColor: '#A52A2A',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.65)',
   },
 }))
 

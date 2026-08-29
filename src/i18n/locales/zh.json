@@ -3,14 +3,27 @@
     "scanToView": "扫码在手机上打开"
   },
   "hero": {
-    "welcome": "欢迎光临",
+    "welcome": "我们要结婚啦!",
     "invitationLabel": "婚礼邀请函",
-    "coupleNameOne": "Jessica",
-    "coupleNameTwo": "Yong Kheng",
+    "coupleNameOne": "纪思佳",
+    "coupleNameTwo": "佘榮钦",
+    "dateLabel": "星期日, 2027年3月28日",
+    "timeLabel": "下午 12点30分",
+    "venueName": "SAFRA Mount Faber Club",
+    "restaurantName": "悦之园",
     "rsvpCta": "立即回复"
   },
+  "couple": {
+    "groomLabel": "新郎",
+    "brideLabel": "新娘"
+  },
+  "calendar": {
+    "heading": "预留日期",
+    "weekdays": ["一", "二", "三", "四", "五", "六", "日"]
+  },
   "venue": {
-    "heading": "婚宴地点"
+    "heading": "婚宴地点",
+    "openInMapsLabel": "在谷歌地图中打开婚宴地点"
   },
   "countdown": {
     "heading": "倒数计时",
@@ -26,11 +39,16 @@
     "paragraph2": "无论季节如何变换，我们最喜欢的地方始终是彼此身旁。现在，我们迫不及待想在最爱的人们的见证下，开启人生的下一个篇章。"
   },
   "gallery": {
-    "heading": "美好时光"
+    "heading": "美好时光",
+    "previousPhotoLabel": "上一张照片",
+    "nextPhotoLabel": "下一张照片",
+    "showPhotoLabel": "显示第 {{number}} 张照片"
   },
   "rsvp": {
     "heading": "回复邀请",
-    "deadlineLabel": "敬请于以下日期前回复",
+    "rsvpButtonLabel": "立即回复",
+    "dateTimeLabel": "2027年3月28日, 12点30分",
+    "deadlineLabel": "敬请2027年2月1日期前回复",
     "deadlineDate": "2027年2月1日",
     "stepIndicator": "第 {{current}} 步，共 {{total}} 步",
     "stepDetails": "资料",
@@ -40,7 +58,7 @@
     "next": "下一步",
     "yourDetailsHeading": "您的资料",
     "nameLabel": "姓名",
-    "emailLabel": "电子邮箱",
+    "emailLabel": "电子邮箱（选填）",
     "contactNumberLabel": "联络电话（选填）",
     "attendingLabel": "您是否出席？",
     "attendingYes": "欣然应邀",
@@ -49,7 +67,6 @@
     "mealLabel": "餐食偏好（选填）",
     "mealRegular": "普通餐",
     "mealVegetarian": "素食",
-    "mealVegan": "纯素",
     "mealHalal": "清真",
     "additionalGuestsHeading": "同行嘉宾",
     "additionalGuestsLabel": "是否携同其他嘉宾？请使用按钮添加",
@@ -61,9 +78,11 @@
     "resubmit": "再次提交",
     "submitError": "提交回复时发生错误，请稍后再试。",
     "foundExisting": "欢迎回来！我们已载入您先前的回复，欢迎更新。",
+    "closeLabel": "关闭回复表单",
+    "decreaseGuestsLabel": "减少同行嘉宾人数",
+    "increaseGuestsLabel": "增加同行嘉宾人数",
     "errors": {
       "nameRequired": "请输入姓名",
-      "emailRequired": "请输入电子邮箱",
       "emailInvalid": "请输入有效的电子邮箱地址",
       "attendingRequired": "请告诉我们您是否能出席",
       "guestNameRequired": "请输入该嘉宾的姓名"

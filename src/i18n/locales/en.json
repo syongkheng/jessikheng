@@ -3,21 +3,36 @@
     "scanToView": "Scan to open on your phone"
   },
   "hero": {
-    "welcome": "Welcome",
+    "welcome": "We're getting married!",
     "invitationLabel": "The Wedding Invitation",
+    "coupleFullNameOne": "Jessica Kee",
+    "coupleFullNameTwo": "Seah Yong Kheng",
     "coupleNameOne": "Jessica",
     "coupleNameTwo": "Yong Kheng",
+    "dateLabel": "Sunday, 28 March 2027",
+    "timeLabel": "12:30 PM",
+    "venueName": "SAFRA Mount Faber Club",
+    "restaurantName": "Qian Xi Summer Garden",
     "rsvpCta": "RSVP Now"
   },
+  "couple": {
+    "groomLabel": "Groom",
+    "brideLabel": "Bride"
+  },
+  "calendar": {
+    "heading": "Save the Date",
+    "weekdays": ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
+  },
   "venue": {
-    "heading": "Venue"
+    "heading": "Venue",
+    "openInMapsLabel": "Open venue location in Google Maps"
   },
   "countdown": {
     "heading": "Counting Down",
     "days": "Days",
     "hours": "Hours",
-    "minutes": "Minutes",
-    "seconds": "Seconds",
+    "minutes": "Mins",
+    "seconds": "Secs",
     "married": "We're married!"
   },
   "story": {
@@ -26,30 +41,34 @@
     "paragraph2": "Through every season, we've found our favorite place is simply beside each other. Now we can't wait to begin our next chapter surrounded by the people we love most."
   },
   "gallery": {
-    "heading": "Our Moments"
+    "heading": "Our Moments",
+    "previousPhotoLabel": "Previous photo",
+    "nextPhotoLabel": "Next photo",
+    "showPhotoLabel": "Show photo {{number}}"
   },
   "rsvp": {
     "heading": "RSVP",
-    "deadlineLabel": "Kindly respond by",
+    "rsvpButtonLabel": "RSVP Now",
+    "dateTimeLabel": "28 March 2027, 12:30 PM",
+    "deadlineLabel": "Kindly respond by 1 February 2027" ,
     "deadlineDate": "1 February 2027",
     "stepIndicator": "Step {{current}} of {{total}}",
     "stepDetails": "Details",
-    "stepEvent": "Event",
+    "stepEvent": "Preferences",
     "stepMessage": "Message",
     "back": "Back",
     "next": "Next",
     "yourDetailsHeading": "Your Details",
     "nameLabel": "Full name",
-    "emailLabel": "Email",
+    "emailLabel": "Email (optional)",
     "contactNumberLabel": "Contact number (optional)",
     "attendingLabel": "Will you be attending?",
-    "attendingYes": "Joyfully accepts",
-    "attendingNo": "Regretfully declines",
+    "attendingYes": "Joyfully accept",
+    "attendingNo": "Regretfully decline",
     "dietaryRestrictionsLabel": "Dietary restrictions (optional)",
     "mealLabel": "Meal preference (optional)",
-    "mealRegular": "Regular",
+    "mealRegular": "No Restrictions",
     "mealVegetarian": "Vegetarian",
-    "mealVegan": "Vegan",
     "mealHalal": "Halal",
     "additionalGuestsHeading": "Additional Guests",
     "additionalGuestsLabel": "Bringing anyone else? Use the buttons to add guests",
@@ -61,9 +80,11 @@
     "resubmit": "Submit another response",
     "submitError": "Something went wrong sending your RSVP. Please try again.",
     "foundExisting": "Welcome back! We've loaded your previous RSVP — feel free to update it.",
+    "closeLabel": "Close RSVP form",
+    "decreaseGuestsLabel": "Decrease guest count",
+    "increaseGuestsLabel": "Increase guest count",
     "errors": {
       "nameRequired": "Please enter your name",
-      "emailRequired": "Please enter your email",
       "emailInvalid": "Please enter a valid email address",
       "attendingRequired": "Please let us know if you can make it",
       "guestNameRequired": "Please enter this guest's name"

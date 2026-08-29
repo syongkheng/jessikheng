@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative',
     overflow: 'hidden',
   },
-  // `fill` covers an already-sized parent (e.g. RSVPForm's background photo)
+  // `fill` covers an already-sized parent (e.g. RSVPModal's background photo)
   // — no placeholder height needed since the parent's height doesn't come
   // from this image.
   fill: {

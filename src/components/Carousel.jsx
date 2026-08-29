@@ -3,6 +3,7 @@ import { makeStyles } from '@mui/styles'
 import { Box, IconButton } from '@mui/material'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import { useTranslation } from 'react-i18next'
 import { photos } from '../data/photos.js'
 
 const useStyles = makeStyles((theme) => ({
@@ -72,6 +73,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function Carousel() {
+  const { t } = useTranslation()
   const classes = useStyles()
   const [index, setIndex] = useState(0)
 
@@ -103,12 +105,12 @@ function Carousel() {
         />
       ))}
       <Box className={`${classes.arrowWrapper} ${classes.arrowLeft}`}>
-        <IconButton onClick={showPrevious} aria-label="Previous photo" color="inherit">
+        <IconButton onClick={showPrevious} aria-label={t('gallery.previousPhotoLabel')} color="inherit">
           <ChevronLeftIcon />
         </IconButton>
       </Box>
       <Box className={`${classes.arrowWrapper} ${classes.arrowRight}`}>
-        <IconButton onClick={showNext} aria-label="Next photo" color="inherit">
+        <IconButton onClick={showNext} aria-label={t('gallery.nextPhotoLabel')} color="inherit">
           <ChevronRightIcon />
         </IconButton>
       </Box>
@@ -117,7 +119,7 @@ function Carousel() {
           <button
             key={photo.id}
             type="button"
-            aria-label={`Show photo ${i + 1}`}
+            aria-label={t('gallery.showPhotoLabel', { number: i + 1 })}
             className={`${classes.dot} ${i === index ? classes.dotActive : ''}`}
             onClick={() => setIndex(i)}
           />

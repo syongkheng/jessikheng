@@ -29,6 +29,24 @@ function FloralSprig({ variant = 'leaf', className, style }) {
     )
   }
 
+  if (variant === 'heart') {
+    return (
+      <svg
+        viewBox="0 0 64 64"
+        fill="currentColor"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
+        style={style}
+        aria-hidden="true"
+      >
+        <path d="M32 50 C 10 34, 6 18, 18 10 C 26 5, 32 12, 32 18 C 32 12, 38 5, 46 10 C 58 18, 54 34, 32 50 Z" />
+      </svg>
+    )
+  }
+
   return (
     <svg
       viewBox="0 0 64 64"

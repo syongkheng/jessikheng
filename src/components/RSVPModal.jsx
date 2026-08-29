@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { makeStyles } from '@mui/styles'
+import { useState } from "react";
+import { makeStyles } from "@mui/styles";
 import {
   Dialog,
   Box,
@@ -20,20 +20,22 @@ import {
   Step,
   StepLabel,
   useMediaQuery,
-} from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
-import RemoveIcon from '@mui/icons-material/Remove'
-import CloseIcon from '@mui/icons-material/Close'
-import { useTranslation } from 'react-i18next'
-import FloralSprig from './decor/FloralSprig.jsx'
-import LazyImage from './LazyImage.jsx'
-import LanguageSwitcher from './LanguageSwitcher.jsx'
-import { photos } from '../data/photos.js'
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import CloseIcon from "@mui/icons-material/Close";
+import { useTranslation } from "react-i18next";
+import FloralSprig from "./decor/FloralSprig.jsx";
+import LazyImage from "./LazyImage.jsx";
+import LanguageSwitcher from "./LanguageSwitcher.jsx";
+import { photos } from "../data/photos.js";
 
-const API_BASE_URL = import.meta.env.DEV ? 'http://localhost:3000' : 'https://api.awense.com'
-const RSVP_ENDPOINT = `${API_BASE_URL}/wedding/rsvp`
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const MAX_ADDITIONAL_GUESTS = 8
+const API_BASE_URL = import.meta.env.DEV
+  ? "http://localhost:3000"
+  : "https://api.awense.com";
+const RSVP_ENDPOINT = `${API_BASE_URL}/wedding/rsvp`;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_ADDITIONAL_GUESTS = 8;
 
 const useStyles = makeStyles((theme) => ({
   // The modal replaces the current "screen" at the exact same size: on a
@@ -52,59 +54,59 @@ const useStyles = makeStyles((theme) => ({
   // rule with per-prop function values, avoids a JSS quirk where dynamic
   // per-props rules can leave a stale duplicate class attached.
   paperBase: {
-    position: 'relative',
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'hidden',
+    position: "relative",
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden",
     margin: 0,
-    maxWidth: 'none',
-    maxHeight: 'none',
+    maxWidth: "none",
+    maxHeight: "none",
   },
   paperPhone: {
-    width: '100vw',
-    height: '100vh',
+    width: "100vw",
+    height: "100vh",
     borderRadius: 0,
   },
   paperDesktop: {
-    width: 'auto',
-    height: 'min(880px, 92vh)',
-    aspectRatio: '9 / 19.5',
-    borderRadius: 55,
+    width: "auto",
+    height: "min(880px, 92vh)",
+    aspectRatio: "9 / 19.5",
+    borderRadius: 25,
   },
   container: {
     padding: 0,
   },
   photoHeader: {
-    position: 'relative',
+    position: "relative",
     height: 180,
     flexShrink: 0,
   },
   bgImage: {
-    objectFit: 'cover',
+    objectFit: "cover",
   },
   closeButton: {
-    position: 'absolute',
+    position: "absolute",
     top: theme.spacing(1.5),
     right: theme.spacing(1.5),
     zIndex: 2,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    '&:hover': {
-      backgroundColor: '#fff',
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    "&:hover": {
+      backgroundColor: "#fff",
     },
   },
   card: {
-    flex: '1 1 auto',
+    flex: "1 1 auto",
     minHeight: 0,
-    overflowY: 'auto',
+    overflowY: "auto",
     padding: theme.spacing(4, 3, 3),
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   // Floral decor, the RSVP heading, and the language toggle all sit in one
   // row — the heading grows to fill the middle so "RSVP" stays visually
   // centered regardless of the flanking elements' widths.
   headingRow: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
     gap: theme.spacing(1),
     marginBottom: theme.spacing(1),
   },
@@ -116,18 +118,18 @@ const useStyles = makeStyles((theme) => ({
     opacity: 0.6,
   },
   heading: {
-    flex: '1 1 auto',
-    textAlign: 'center',
+    flex: "1 1 auto",
+    textAlign: "center",
     color: theme.palette.text.primary,
   },
   subheading: {
-    display: 'block',
-    textAlign: 'center',
+    display: "block",
+    textAlign: "center",
     color: theme.palette.text.secondary,
   },
   deadlineDate: {
-    display: 'block',
-    textAlign: 'center',
+    display: "block",
+    textAlign: "center",
     marginBottom: theme.spacing(2),
     color: theme.palette.text.secondary,
     fontWeight: 600,
@@ -139,19 +141,31 @@ const useStyles = makeStyles((theme) => ({
   stepper: {
     marginBottom: theme.spacing(3),
     padding: 0,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
+    "& .MuiStepIcon-root.Mui-active": {
+      color: "#A52A2A",
+    },
+    "& .MuiStepIcon-root.Mui-completed": {
+      color: "#A52A2A",
+    },
+    "& .MuiStepConnector-root.Mui-active .MuiStepConnector-line": {
+      borderColor: "#A52A2A",
+    },
+    "& .MuiStepConnector-root.Mui-completed .MuiStepConnector-line": {
+      borderColor: "#A52A2A",
+    },
   },
   form: {
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     gap: theme.spacing(3),
   },
   sectionLabel: {
-    display: 'block',
+    display: "block",
     color: theme.palette.secondary.dark,
-    letterSpacing: '0.2em',
-    textTransform: 'uppercase',
-    fontSize: '0.75rem',
+    letterSpacing: "0.2em",
+    textTransform: "uppercase",
+    fontSize: "0.75rem",
   },
   divider: {
     marginTop: theme.spacing(1),
@@ -160,207 +174,241 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
   },
   stepperRow: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
     gap: theme.spacing(2),
   },
   stepperButton: {
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.primary.contrastText,
+    backgroundColor: "#A52A2A",
+    color: "#ffffff",
     width: 40,
     height: 40,
-    '&:hover': {
-      backgroundColor: theme.palette.primary.dark,
+    "&:hover": {
+      backgroundColor: "#7a1f1f",
     },
-    '&.Mui-disabled': {
+    "&.Mui-disabled": {
       backgroundColor: theme.palette.action.disabledBackground,
     },
   },
   stepperValue: {
     minWidth: 28,
-    textAlign: 'center',
-    fontSize: '1.25rem',
+    textAlign: "center",
+    fontSize: "1.25rem",
     fontWeight: 600,
-    color: theme.palette.primary.dark,
+    color: "#A52A2A",
+  },
+  containedRedButton: {
+    backgroundColor: "#A52A2A",
+    "&:hover": {
+      backgroundColor: "#7a1f1f",
+    },
+  },
+  outlinedRedButton: {
+    color: "#A52A2A",
+    borderColor: "#A52A2A",
+    "&:hover": {
+      borderColor: "#7a1f1f",
+      backgroundColor: "rgba(165, 42, 42, 0.04)",
+    },
   },
   guestFields: {
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     gap: theme.spacing(2),
   },
   navRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
+    display: "flex",
+    justifyContent: "space-between",
     gap: theme.spacing(2),
     marginTop: theme.spacing(1),
   },
   navButton: {
-    flex: '1 1 auto',
+    flex: "1 1 auto",
   },
-}))
+}));
 
 const initialFormState = {
-  name: '',
-  email: '',
-  contactNumber: '',
-  attending: '',
-  dietaryRestrictions: '',
-  meal: '',
+  name: "",
+  email: "",
+  contactNumber: "",
+  attending: "",
+  dietaryRestrictions: "",
+  meal: "",
   additionalGuestCount: 0,
   guestNames: [],
-  message: '',
-}
+  message: "",
+};
 
 function RSVPModal({ open, onClose }) {
   // Same breakpoint PhoneFrame uses to decide framed-desktop vs real-phone
   // rendering, so this modal always matches whichever "screen" is current.
-  const isPhone = useMediaQuery('(max-width:800px)')
-  const classes = useStyles()
-  const paperClass = `${classes.paperBase} ${isPhone ? classes.paperPhone : classes.paperDesktop}`
-  const { t } = useTranslation()
-  const [form, setForm] = useState(initialFormState)
-  const [errors, setErrors] = useState({})
-  const [currentStep, setCurrentStep] = useState(0)
-  const [submitted, setSubmitted] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
-  const [submitError, setSubmitError] = useState('')
-  const [infoMessage, setInfoMessage] = useState('')
-  const rsvpPhoto = photos[0]
+  const isPhone = useMediaQuery("(max-width:800px)");
+  const classes = useStyles();
+  const paperClass = `${classes.paperBase} ${isPhone ? classes.paperPhone : classes.paperDesktop}`;
+  const { t } = useTranslation();
+  const [form, setForm] = useState(initialFormState);
+  const [errors, setErrors] = useState({});
+  const [currentStep, setCurrentStep] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [infoMessage, setInfoMessage] = useState("");
+  const rsvpPhoto = photos[0];
 
   // Always all three steps — even when attending is "no" or an edited
   // RSVP has no additional guests — so the Event step (and its guest
   // stepper) never disappears from the wizard.
-  const steps = ['details', 'event', 'message']
-  const stepName = steps[Math.min(currentStep, steps.length - 1)]
-  const stepLabels = { details: t('rsvp.stepDetails'), event: t('rsvp.stepEvent'), message: t('rsvp.stepMessage') }
+  const steps = ["details", "event", "message"];
+  const stepName = steps[Math.min(currentStep, steps.length - 1)];
+  const stepLabels = {
+    details: t("rsvp.stepDetails"),
+    event: t("rsvp.stepEvent"),
+    message: t("rsvp.stepMessage"),
+  };
 
   const handleChange = (field) => (event) => {
-    setForm((prev) => ({ ...prev, [field]: event.target.value }))
-  }
+    setForm((prev) => ({ ...prev, [field]: event.target.value }));
+  };
 
   const handleGuestNameChange = (index) => (event) => {
     setForm((prev) => {
-      const guestNames = [...prev.guestNames]
-      guestNames[index] = event.target.value
-      return { ...prev, guestNames }
-    })
-  }
+      const guestNames = [...prev.guestNames];
+      guestNames[index] = event.target.value;
+      return { ...prev, guestNames };
+    });
+  };
 
   const adjustGuestCount = (delta) => {
     setForm((prev) => {
-      const nextCount = Math.min(MAX_ADDITIONAL_GUESTS, Math.max(0, prev.additionalGuestCount + delta))
-      const guestNames = [...prev.guestNames]
-      guestNames.length = nextCount
-      return { ...prev, additionalGuestCount: nextCount, guestNames: guestNames.map((n) => n ?? '') }
-    })
-  }
+      const nextCount = Math.min(
+        MAX_ADDITIONAL_GUESTS,
+        Math.max(0, prev.additionalGuestCount + delta),
+      );
+      const guestNames = [...prev.guestNames];
+      guestNames.length = nextCount;
+      return {
+        ...prev,
+        additionalGuestCount: nextCount,
+        guestNames: guestNames.map((n) => n ?? ""),
+      };
+    });
+  };
 
-  // Re-submitting an already-registered email overwrites that person's
+  // Re-submitting an already-registered name overwrites that person's
   // previous RSVP server-side (see qindom's WeddingValidator/Service), so
   // this just fetches it to pre-fill the form — the actual update-vs-insert
-  // decision happens transparently on submit, keyed off email alone.
+  // decision happens transparently on submit, keyed off name alone.
   const lookupExistingRsvp = async () => {
-    const email = form.email.trim()
-    if (!email || !EMAIL_PATTERN.test(email)) {
-      return
+    const name = form.name.trim();
+    if (!name) {
+      return;
     }
 
     try {
-      const response = await fetch(`${RSVP_ENDPOINT}?email=${encodeURIComponent(email)}`)
-      const body = await response.json().catch(() => null)
-      const rsvp = body?.data?.found ? body.data.rsvp : null
+      const response = await fetch(
+        `${RSVP_ENDPOINT}?name=${encodeURIComponent(name)}`,
+      );
+      const body = await response.json().catch(() => null);
+      const rsvp = body?.data?.found ? body.data.rsvp : null;
       if (!rsvp) {
-        return
+        return;
       }
 
       setForm((prev) => ({
         ...prev,
         name: rsvp.name ?? prev.name,
-        contactNumber: rsvp.contactNumber ?? '',
-        attending: rsvp.attending ? 'yes' : 'no',
-        dietaryRestrictions: rsvp.dietaryRestrictions ?? '',
-        meal: rsvp.mealPreference ?? '',
+        email: rsvp.email ?? prev.email,
+        contactNumber: rsvp.contactNumber ?? "",
+        attending: rsvp.attending ? "yes" : "no",
+        dietaryRestrictions: rsvp.dietaryRestrictions ?? "",
+        meal: rsvp.mealPreference ?? "",
         additionalGuestCount: rsvp.additionalGuestContact?.length ?? 0,
-        guestNames: (rsvp.additionalGuestContact ?? []).map((guest) => guest.name ?? ''),
-        message: rsvp.message ?? '',
-      }))
-      setInfoMessage(t('rsvp.foundExisting'))
+        guestNames: (rsvp.additionalGuestContact ?? []).map(
+          (guest) => guest.name ?? "",
+        ),
+        message: rsvp.message ?? "",
+      }));
+      setInfoMessage(t("rsvp.foundExisting"));
     } catch {
       // Best-effort convenience lookup — if it fails, the user just fills
       // the form in fresh, same as before this feature existed.
     }
-  }
+  };
 
   const validateDetailsStep = () => {
-    const nextErrors = {}
+    const nextErrors = {};
     if (!form.name.trim()) {
-      nextErrors.name = t('rsvp.errors.nameRequired')
+      nextErrors.name = t("rsvp.errors.nameRequired");
     }
-    if (!form.email.trim()) {
-      nextErrors.email = t('rsvp.errors.emailRequired')
-    } else if (!EMAIL_PATTERN.test(form.email.trim())) {
-      nextErrors.email = t('rsvp.errors.emailInvalid')
+    if (form.email.trim() && !EMAIL_PATTERN.test(form.email.trim())) {
+      nextErrors.email = t("rsvp.errors.emailInvalid");
     }
     if (!form.attending) {
-      nextErrors.attending = t('rsvp.errors.attendingRequired')
+      nextErrors.attending = t("rsvp.errors.attendingRequired");
     }
-    setErrors(nextErrors)
-    return Object.keys(nextErrors).length === 0
-  }
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
 
   const validateEventStep = () => {
-    const guestNameErrors = []
+    const guestNameErrors = [];
     for (let i = 0; i < form.additionalGuestCount; i++) {
-      if (!(form.guestNames[i] || '').trim()) {
-        guestNameErrors[i] = t('rsvp.errors.guestNameRequired')
+      if (!(form.guestNames[i] || "").trim()) {
+        guestNameErrors[i] = t("rsvp.errors.guestNameRequired");
       }
     }
-    const nextErrors = guestNameErrors.length > 0 ? { guestNames: guestNameErrors } : {}
-    setErrors(nextErrors)
-    return Object.keys(nextErrors).length === 0
-  }
+    const nextErrors =
+      guestNameErrors.length > 0 ? { guestNames: guestNameErrors } : {};
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
 
   const handleNext = async () => {
-    const isValid = stepName === 'details' ? validateDetailsStep() : stepName === 'event' ? validateEventStep() : true
+    const isValid =
+      stepName === "details"
+        ? validateDetailsStep()
+        : stepName === "event"
+          ? validateEventStep()
+          : true;
     if (!isValid) {
-      return
+      return;
     }
-    if (stepName === 'details') {
-      await lookupExistingRsvp()
+    if (stepName === "details") {
+      await lookupExistingRsvp();
     }
-    setErrors({})
-    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1))
-  }
+    setErrors({});
+    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+  };
 
   const handleBack = () => {
-    setErrors({})
-    setCurrentStep((prev) => Math.max(prev - 1, 0))
-  }
+    setErrors({});
+    setCurrentStep((prev) => Math.max(prev - 1, 0));
+  };
 
   const handleSubmit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     // Defensive guard: only the last step's button is type="submit", but
     // native form-submit can still be triggered early in some browsers
     // (e.g. pressing Enter in a text field on an earlier step). Ignore it
     // unless the user has actually reached the final step.
-    if (stepName !== 'message') {
-      return
+    if (stepName !== "message") {
+      return;
     }
 
-    setSubmitting(true)
-    setSubmitError('')
+    setSubmitting(true);
+    setSubmitError("");
 
     const payload = {
       name: form.name.trim(),
-      email: form.email.trim(),
+      email: form.email.trim() || null,
       contactNumber: form.contactNumber.trim() || null,
-      attending: form.attending === 'yes',
+      attending: form.attending === "yes",
       dietaryRestrictions: form.dietaryRestrictions.trim() || null,
       mealPreference: form.meal || null,
       message: form.message.trim() || null,
       additionalGuestContact:
-        form.attending === 'yes'
+        form.attending === "yes"
           ? form.guestNames.slice(0, form.additionalGuestCount).map((name) => ({
               name: name.trim(),
               email: null,
@@ -369,43 +417,43 @@ function RSVPModal({ open, onClose }) {
               mealPreference: null,
             }))
           : [],
-    }
+    };
 
     try {
       const response = await fetch(RSVP_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      })
-      const body = await response.json().catch(() => null)
+      });
+      const body = await response.json().catch(() => null);
 
-      if (response.ok && body?.status === 'Ok') {
-        setSubmitted(true)
+      if (response.ok && body?.status === "Ok") {
+        setSubmitted(true);
       } else {
-        setSubmitError(t('rsvp.submitError'))
+        setSubmitError(t("rsvp.submitError"));
       }
     } catch {
-      setSubmitError(t('rsvp.submitError'))
+      setSubmitError(t("rsvp.submitError"));
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   const handleReset = () => {
-    setForm(initialFormState)
-    setErrors({})
-    setCurrentStep(0)
-    setSubmitted(false)
-    setSubmitError('')
-    setInfoMessage('')
-  }
+    setForm(initialFormState);
+    setErrors({});
+    setCurrentStep(0);
+    setSubmitted(false);
+    setSubmitError("");
+    setInfoMessage("");
+  };
 
   const handleClose = () => {
-    onClose()
+    onClose();
     // Reset after the close transition so the form doesn't visibly flash
     // back to empty while still on screen.
-    setTimeout(handleReset, 200)
-  }
+    setTimeout(handleReset, 200);
+  };
 
   return (
     <Dialog
@@ -414,13 +462,22 @@ function RSVPModal({ open, onClose }) {
       maxWidth={false}
       classes={{ paper: paperClass, container: classes.container }}
     >
-      <IconButton className={classes.closeButton} onClick={handleClose} aria-label="Close RSVP form">
+      <IconButton
+        className={classes.closeButton}
+        onClick={handleClose}
+        aria-label={t('rsvp.closeLabel')}
+      >
         <CloseIcon />
       </IconButton>
 
       {rsvpPhoto && (
         <Box className={classes.photoHeader}>
-          <LazyImage src={rsvpPhoto.src} alt={rsvpPhoto.alt} className={classes.bgImage} fill />
+          <LazyImage
+            src={rsvpPhoto.src}
+            alt={rsvpPhoto.alt}
+            className={classes.bgImage}
+            fill
+          />
         </Box>
       )}
 
@@ -428,27 +485,42 @@ function RSVPModal({ open, onClose }) {
         <Box className={classes.headingRow}>
           <FloralSprig variant="bloom" className={classes.headingSprig} />
           <Typography variant="h4" className={classes.heading}>
-            {t('rsvp.heading')}
+            {t("rsvp.heading")}
           </Typography>
-          <LanguageSwitcher />
+          <FloralSprig variant="bloom" className={classes.headingSprig} />
+          {/* <LanguageSwitcher /> */}
         </Box>
 
         {submitted ? (
           <Box className={classes.form}>
-            <Alert severity="success">{t('rsvp.successMessage', { name: form.name })}</Alert>
-            <Button variant="outlined" color="primary" onClick={handleReset}>
-              {t('rsvp.resubmit')}
+            <Alert severity="success">
+              {t("rsvp.successMessage", { name: form.name })}
+            </Alert>
+            <Button
+              className={classes.outlinedRedButton}
+              variant="outlined"
+              color="primary"
+              onClick={handleReset}
+            >
+              {t("rsvp.resubmit")}
             </Button>
           </Box>
         ) : (
           <>
+            <Typography variant="body2" className={classes.subheading}>
+              {t("hero.venueName")}
+            </Typography>
             <Typography variant="body1" className={classes.subheading}>
-              {t('rsvp.deadlineLabel')}
+              {t("hero.restaurantName")}
             </Typography>
             <Typography variant="body1" className={classes.deadlineDate}>
-              {t('rsvp.deadlineDate')}
+              {t("rsvp.dateTimeLabel")}
             </Typography>
-            <Stepper activeStep={currentStep} alternativeLabel className={classes.stepper}>
+            <Stepper
+              activeStep={currentStep}
+              alternativeLabel
+              className={classes.stepper}
+            >
               {steps.map((step) => (
                 <Step key={step}>
                   <StepLabel>{stepLabels[step]}</StepLabel>
@@ -462,47 +534,57 @@ function RSVPModal({ open, onClose }) {
               onSubmit={handleSubmit}
               noValidate
             >
-              {stepName === 'details' && (
+              {stepName === "details" && (
                 <>
-                  <Typography variant="overline" className={classes.sectionLabel}>
-                    {t('rsvp.yourDetailsHeading')}
+                  <Typography
+                    variant="overline"
+                    className={classes.sectionLabel}
+                  >
+                    {t("rsvp.yourDetailsHeading")}
                   </Typography>
 
                   <TextField
-                    label={t('rsvp.nameLabel')}
+                    label={t("rsvp.nameLabel")}
                     value={form.name}
-                    onChange={handleChange('name')}
+                    onChange={handleChange("name")}
                     error={Boolean(errors.name)}
                     helperText={errors.name}
                     required
                   />
 
                   <TextField
-                    label={t('rsvp.emailLabel')}
+                    label={t("rsvp.emailLabel")}
                     type="email"
                     value={form.email}
-                    onChange={handleChange('email')}
+                    onChange={handleChange("email")}
                     error={Boolean(errors.email)}
                     helperText={errors.email}
-                    required
                   />
 
                   <TextField
-                    label={t('rsvp.contactNumberLabel')}
+                    label={t("rsvp.contactNumberLabel")}
                     type="tel"
                     value={form.contactNumber}
-                    onChange={handleChange('contactNumber')}
+                    onChange={handleChange("contactNumber")}
                   />
 
                   <FormControl error={Boolean(errors.attending)}>
-                    <FormLabel>{t('rsvp.attendingLabel')}</FormLabel>
+                    <FormLabel>{t("rsvp.attendingLabel")}</FormLabel>
                     <RadioGroup
                       row
                       value={form.attending}
-                      onChange={handleChange('attending')}
+                      onChange={handleChange("attending")}
                     >
-                      <FormControlLabel value="yes" control={<Radio />} label={t('rsvp.attendingYes')} />
-                      <FormControlLabel value="no" control={<Radio />} label={t('rsvp.attendingNo')} />
+                      <FormControlLabel
+                        value="yes"
+                        control={<Radio />}
+                        label={t("rsvp.attendingYes")}
+                      />
+                      <FormControlLabel
+                        value="no"
+                        control={<Radio />}
+                        label={t("rsvp.attendingNo")}
+                      />
                     </RadioGroup>
                     {errors.attending && (
                       <Typography variant="caption" color="error">
@@ -513,36 +595,40 @@ function RSVPModal({ open, onClose }) {
                 </>
               )}
 
-              {stepName === 'event' && (
+              {stepName === "event" && (
                 <>
                   <TextField
-                    label={t('rsvp.dietaryRestrictionsLabel')}
+                    label={t("rsvp.dietaryRestrictionsLabel")}
                     value={form.dietaryRestrictions}
-                    onChange={handleChange('dietaryRestrictions')}
+                    onChange={handleChange("dietaryRestrictions")}
                   />
 
                   <TextField
                     select
-                    label={t('rsvp.mealLabel')}
+                    label={t("rsvp.mealLabel")}
                     value={form.meal}
-                    onChange={handleChange('meal')}
+                    onChange={handleChange("meal")}
                   >
                     <MenuItem value="">—</MenuItem>
-                    <MenuItem value="regular">{t('rsvp.mealRegular')}</MenuItem>
-                    <MenuItem value="vegetarian">{t('rsvp.mealVegetarian')}</MenuItem>
-                    <MenuItem value="vegan">{t('rsvp.mealVegan')}</MenuItem>
-                    <MenuItem value="halal">{t('rsvp.mealHalal')}</MenuItem>
+                    <MenuItem value="regular">{t("rsvp.mealRegular")}</MenuItem>
+                    <MenuItem value="vegetarian">
+                      {t("rsvp.mealVegetarian")}
+                    </MenuItem>
+                    <MenuItem value="halal">{t("rsvp.mealHalal")}</MenuItem>
                   </TextField>
 
                   <Divider className={classes.divider} />
 
-                  <Typography variant="overline" className={classes.sectionLabel}>
-                    {t('rsvp.additionalGuestsHeading')}
+                  <Typography
+                    variant="overline"
+                    className={classes.sectionLabel}
+                  >
+                    {t("rsvp.additionalGuestsHeading")}
                   </Typography>
 
                   <Box>
                     <FormLabel className={classes.stepperLabel}>
-                      {t('rsvp.additionalGuestsLabel')}
+                      {t("rsvp.additionalGuestsLabel")}
                     </FormLabel>
                     <Box className={classes.stepperRow}>
                       <IconButton
@@ -550,7 +636,7 @@ function RSVPModal({ open, onClose }) {
                         className={classes.stepperButton}
                         onClick={() => adjustGuestCount(-1)}
                         disabled={form.additionalGuestCount <= 0}
-                        aria-label="Decrease guest count"
+                        aria-label={t('rsvp.decreaseGuestsLabel')}
                       >
                         <RemoveIcon />
                       </IconButton>
@@ -561,8 +647,10 @@ function RSVPModal({ open, onClose }) {
                         type="button"
                         className={classes.stepperButton}
                         onClick={() => adjustGuestCount(1)}
-                        disabled={form.additionalGuestCount >= MAX_ADDITIONAL_GUESTS}
-                        aria-label="Increase guest count"
+                        disabled={
+                          form.additionalGuestCount >= MAX_ADDITIONAL_GUESTS
+                        }
+                        aria-label={t('rsvp.increaseGuestsLabel')}
                       >
                         <AddIcon />
                       </IconButton>
@@ -571,27 +659,32 @@ function RSVPModal({ open, onClose }) {
 
                   {form.additionalGuestCount > 0 && (
                     <Box className={classes.guestFields}>
-                      {Array.from({ length: form.additionalGuestCount }, (_, index) => (
-                        <TextField
-                          key={index}
-                          label={t('rsvp.guestNameLabel', { number: index + 2 })}
-                          value={form.guestNames[index] || ''}
-                          onChange={handleGuestNameChange(index)}
-                          error={Boolean(errors.guestNames?.[index])}
-                          helperText={errors.guestNames?.[index]}
-                          required
-                        />
-                      ))}
+                      {Array.from(
+                        { length: form.additionalGuestCount },
+                        (_, index) => (
+                          <TextField
+                            key={index}
+                            label={t("rsvp.guestNameLabel", {
+                              number: index + 2,
+                            })}
+                            value={form.guestNames[index] || ""}
+                            onChange={handleGuestNameChange(index)}
+                            error={Boolean(errors.guestNames?.[index])}
+                            helperText={errors.guestNames?.[index]}
+                            required
+                          />
+                        ),
+                      )}
                     </Box>
                   )}
                 </>
               )}
 
-              {stepName === 'message' && (
+              {stepName === "message" && (
                 <TextField
-                  label={t('rsvp.messageLabel')}
+                  label={t("rsvp.messageLabel")}
                   value={form.message}
-                  onChange={handleChange('message')}
+                  onChange={handleChange("message")}
                   multiline
                   minRows={3}
                 />
@@ -601,13 +694,13 @@ function RSVPModal({ open, onClose }) {
                 {currentStep > 0 && (
                   <Button
                     type="button"
-                    className={classes.navButton}
+                    className={`${classes.navButton} ${classes.outlinedRedButton}`}
                     variant="outlined"
                     color="primary"
                     onClick={handleBack}
                     disabled={submitting}
                   >
-                    {t('rsvp.back')}
+                    {t("rsvp.back")}
                   </Button>
                 )}
 
@@ -615,23 +708,23 @@ function RSVPModal({ open, onClose }) {
                   <Button
                     key="next"
                     type="button"
-                    className={classes.navButton}
+                    className={`${classes.navButton} ${classes.containedRedButton}`}
                     variant="contained"
                     color="primary"
                     onClick={handleNext}
                   >
-                    {t('rsvp.next')}
+                    {t("rsvp.next")}
                   </Button>
                 ) : (
                   <Button
                     key="submit"
-                    className={classes.navButton}
+                    className={`${classes.navButton} ${classes.containedRedButton}`}
                     type="submit"
                     variant="contained"
                     color="primary"
                     disabled={submitting}
                   >
-                    {submitting ? t('rsvp.submitting') : t('rsvp.submit')}
+                    {submitting ? t("rsvp.submitting") : t("rsvp.submit")}
                   </Button>
                 )}
               </Box>
@@ -643,10 +736,14 @@ function RSVPModal({ open, onClose }) {
       <Snackbar
         open={Boolean(submitError)}
         autoHideDuration={6000}
-        onClose={() => setSubmitError('')}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        onClose={() => setSubmitError("")}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert severity="error" variant="filled" onClose={() => setSubmitError('')}>
+        <Alert
+          severity="error"
+          variant="filled"
+          onClose={() => setSubmitError("")}
+        >
           {submitError}
         </Alert>
       </Snackbar>
@@ -654,15 +751,19 @@ function RSVPModal({ open, onClose }) {
       <Snackbar
         open={Boolean(infoMessage)}
         autoHideDuration={6000}
-        onClose={() => setInfoMessage('')}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        onClose={() => setInfoMessage("")}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert severity="info" variant="filled" onClose={() => setInfoMessage('')}>
+        <Alert
+          severity="info"
+          variant="filled"
+          onClose={() => setInfoMessage("")}
+        >
           {infoMessage}
         </Alert>
       </Snackbar>
     </Dialog>
-  )
+  );
 }
 
-export default RSVPModal
+export default RSVPModal;
