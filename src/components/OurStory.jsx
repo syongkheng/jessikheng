@@ -4,10 +4,11 @@ import { useTranslation } from "react-i18next";
 import FloralSprig from "./decor/FloralSprig.jsx";
 import { photos } from "../data/photos.js";
 import LazyImage from "./LazyImage.jsx";
+import TimelineCarousel from "./TimelineCarousel.jsx";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: theme.spacing(6, 6, 2, 6),
+    // padding: theme.spacing(6, 6, 2, 6),
     backgroundColor: theme.palette.background.paper,
   },
   inner: {
@@ -30,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
     color: theme.palette.text.secondary,
     lineHeight: 1.8,
+    padding: theme.spacing(1, 6, 2, 6),
   },
 }));
 
@@ -48,6 +50,7 @@ function OurStory() {
           <Typography variant="h4" className={classes.heading}>
             {t("story.heading")}
           </Typography>
+          <TimelineCarousel />
           <Typography variant="body1" className={classes.paragraph}>
             {t("story.paragraph1")}
           </Typography>
