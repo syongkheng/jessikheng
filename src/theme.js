@@ -82,6 +82,24 @@ const theme = createTheme({
         },
       },
     },
+    // The real cause of the step numbers (1/2/3/4 in the RSVP form's
+    // progress stepper) looking off-center: Cormorant Garamond (the site's
+    // global body font, inherited here) ships oldstyle numerals by
+    // default — "1" and "2" sit flush on the baseline with no descender,
+    // while "3" and "4" dip below it like a lowercase "y". `central`
+    // baseline math centers using whole-font metrics, so a digit without a
+    // descender sits visibly higher than one that has one. Forcing lining
+    // (uniform, full-height) figures via the font's own 'lnum' OpenType
+    // feature makes every digit sit identically, so centering is now
+    // actually uniform across all four steps.
+    MuiStepIcon: {
+      styleOverrides: {
+        text: {
+          dominantBaseline: 'central',
+          fontVariantNumeric: 'lining-nums',
+        },
+      },
+    },
   },
 })
 

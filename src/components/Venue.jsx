@@ -57,8 +57,8 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
   },
   mapWrap: {
-    // display: "flex",
-    // flexDirection: "row",
+    display: "flex",
+    flexDirection: "column",
     alignItems: "center",
     // gap: theme.spacing(2),
   },
@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
   mapThumb: {
     flexShrink: 0,
     width: 260,
-    paddingTop: theme.spacing(1),
+    paddingTop: theme.spacing(2),
   },
 }));
 

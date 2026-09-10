@@ -192,6 +192,9 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 28,
     textAlign: "center",
     fontSize: "1.25rem",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     fontWeight: 600,
     color: "#A52A2A",
   },
@@ -576,7 +579,7 @@ function RSVPModal({ open, onClose, onViewStatus }) {
       <IconButton
         className={classes.closeButton}
         onClick={handleClose}
-        aria-label={t('rsvp.closeLabel')}
+        aria-label={t("rsvp.closeLabel")}
       >
         <CloseIcon />
       </IconButton>
@@ -614,12 +617,17 @@ function RSVPModal({ open, onClose, onViewStatus }) {
 
             {submittedPin && (
               <Box className={classes.reservationCard}>
-                <FloralSprig variant="leaf" className={classes.reservationCardSprig} />
+                <FloralSprig
+                  variant="leaf"
+                  className={classes.reservationCardSprig}
+                />
                 <Typography variant="overline" className={classes.sectionLabel}>
                   {t("rsvp.reservationIdLabel")}
                 </Typography>
                 <Box className={classes.reservationRow}>
-                  <Typography className={classes.reservationCode}>{submittedPin}</Typography>
+                  <Typography className={classes.reservationCode}>
+                    {submittedPin}
+                  </Typography>
                   <IconButton
                     size="small"
                     onClick={handleCopyReservationId}
@@ -631,7 +639,9 @@ function RSVPModal({ open, onClose, onViewStatus }) {
                 <Box
                   component="span"
                   className={`${classes.statusChip} ${
-                    form.attending === "yes" ? classes.statusChipYes : classes.statusChipNo
+                    form.attending === "yes"
+                      ? classes.statusChipYes
+                      : classes.statusChipNo
                   }`}
                 >
                   {form.attending === "yes"
@@ -806,7 +816,7 @@ function RSVPModal({ open, onClose, onViewStatus }) {
                         className={classes.stepperButton}
                         onClick={() => adjustGuestCount(-1)}
                         disabled={form.additionalGuestCount <= 0}
-                        aria-label={t('rsvp.decreaseGuestsLabel')}
+                        aria-label={t("rsvp.decreaseGuestsLabel")}
                       >
                         <RemoveIcon />
                       </IconButton>
@@ -820,7 +830,7 @@ function RSVPModal({ open, onClose, onViewStatus }) {
                         disabled={
                           form.additionalGuestCount >= MAX_ADDITIONAL_GUESTS
                         }
-                        aria-label={t('rsvp.increaseGuestsLabel')}
+                        aria-label={t("rsvp.increaseGuestsLabel")}
                       >
                         <AddIcon />
                       </IconButton>
