@@ -67,9 +67,9 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: '"Moon Dance", cursive !important',
   },
   headlineLineZh: {
-    // "Moon Dance" has no CJK glyphs — "Long Cang" (a brush-script CJK
-    // font) takes over when the resolved language is Chinese.
-    fontFamily: '"Zhi Mang Xing", cursive !important',
+    // Self-hosted subset covering just the couple's own Chinese name — see
+    // index.css and public/fonts/LICENSE-851tegakizatsu.txt.
+    fontFamily: '"Tegaki851", cursive !important',
   },
 }));
 

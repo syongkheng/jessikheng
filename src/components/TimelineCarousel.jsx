@@ -1,11 +1,54 @@
 import { useEffect, useRef, useState } from 'react'
 import { makeStyles } from '@mui/styles'
-import { Box, Typography } from '@mui/material'
+import { Box, IconButton, Typography } from '@mui/material'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import { useTranslation } from 'react-i18next'
 import { timelineMoments } from '../data/timelineMoments.js'
 
 const useStyles = makeStyles((theme) => ({
   root: {
     marginBottom: theme.spacing(3),
+  },
+  // Lets the arrows sit absolutely positioned (and vertically centered)
+  // against the viewport below — margin lives here rather than on the
+  // viewport itself so centering isn't thrown off by trailing whitespace.
+  timelineRow: {
+    position: 'relative',
+    marginBottom: theme.spacing(2),
+  },
+  // Sit right at the viewport's masked/faded edge (see timelineViewport's
+  // WebkitMaskImage below) so each arrow reads over already-fading content
+  // rather than cutting across a crisp dot or label — kept low-opacity and
+  // background-free so they stay a quiet hint rather than a competing UI
+  // element.
+  navArrow: {
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    zIndex: 1,
+    width: 22,
+    height: 22,
+    padding: 0,
+    color: theme.palette.secondary.dark,
+    opacity: 0.45,
+    transition: 'opacity 0.2s ease',
+    '&:hover': {
+      opacity: 0.85,
+      backgroundColor: 'transparent',
+    },
+    '&.Mui-disabled': {
+      opacity: 0.12,
+    },
+  },
+  navArrowLeft: {
+    left: 0,
+  },
+  navArrowRight: {
+    right: 0,
+  },
+  navArrowIcon: {
+    fontSize: 18,
   },
   // The visible window scrolls horizontally; `timelineTrack` is sized wider
   // than it (via inline style, so only `visibleCount` items show at once,
@@ -15,7 +58,6 @@ const useStyles = makeStyles((theme) => ({
     overflowX: 'auto',
     WebkitOverflowScrolling: 'touch',
     scrollbarWidth: 'none',
-    marginBottom: theme.spacing(2),
     padding: theme.spacing(0, 1),
     '&::-webkit-scrollbar': {
       display: 'none',
@@ -122,8 +164,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-// The timeline row IS the carousel's navigation — clicking a year jumps the
-// stage below to that moment's photo, no separate arrows/dots needed.
+// The timeline row IS the carousel's navigation — clicking a year (or
+// swiping the stage, or the prev/next arrows) all just move `index`, and
+// the stage below follows it to that moment's photo.
 const SWIPE_THRESHOLD = 40
 
 // Element-width breakpoints (not viewport media queries) — on desktop this
@@ -138,6 +181,7 @@ function getVisibleCount(width) {
 
 function TimelineCarousel() {
   const classes = useStyles()
+  const { t } = useTranslation()
   const [index, setIndex] = useState(0)
   const [containerWidth, setContainerWidth] = useState(0)
   const touchStartX = useRef(null)
@@ -190,34 +234,56 @@ function TimelineCarousel() {
 
   return (
     <Box className={classes.root}>
-      <Box className={classes.timelineViewport} ref={viewportRef}>
-        <Box
-          className={classes.timelineTrack}
-          style={{ width: `${trackWidthPercent}%` }}
+      <Box className={classes.timelineRow}>
+        <IconButton
+          type="button"
+          className={`${classes.navArrow} ${classes.navArrowLeft}`}
+          onClick={() => goTo(index - 1)}
+          disabled={index === 0}
+          aria-label={t('story.previousYear')}
         >
-          <Box className={classes.timelineLine} />
-          {timelineMoments.map((moment, i) => (
-            <button
-              key={moment.year}
-              type="button"
-              ref={(el) => (buttonRefs.current[i] = el)}
-              className={classes.yearButton}
-              style={{ flexBasis: `${itemWidthPercent}%` }}
-              aria-current={i === index}
-              onClick={() => setIndex(i)}
-            >
-              <Box
-                className={`${classes.dot} ${i === index ? classes.dotActive : ''}`}
-              />
-              <Typography
-                component="span"
-                className={`${classes.yearLabel} ${i === index ? classes.yearLabelActive : ''}`}
+          <ChevronLeftIcon className={classes.navArrowIcon} />
+        </IconButton>
+
+        <Box className={classes.timelineViewport} ref={viewportRef}>
+          <Box
+            className={classes.timelineTrack}
+            style={{ width: `${trackWidthPercent}%` }}
+          >
+            <Box className={classes.timelineLine} />
+            {timelineMoments.map((moment, i) => (
+              <button
+                key={moment.year}
+                type="button"
+                ref={(el) => (buttonRefs.current[i] = el)}
+                className={classes.yearButton}
+                style={{ flexBasis: `${itemWidthPercent}%` }}
+                aria-current={i === index}
+                onClick={() => setIndex(i)}
               >
-                {moment.year}
-              </Typography>
-            </button>
-          ))}
+                <Box
+                  className={`${classes.dot} ${i === index ? classes.dotActive : ''}`}
+                />
+                <Typography
+                  component="span"
+                  className={`${classes.yearLabel} ${i === index ? classes.yearLabelActive : ''}`}
+                >
+                  {moment.year}
+                </Typography>
+              </button>
+            ))}
+          </Box>
         </Box>
+
+        <IconButton
+          type="button"
+          className={`${classes.navArrow} ${classes.navArrowRight}`}
+          onClick={() => goTo(index + 1)}
+          disabled={index === timelineMoments.length - 1}
+          aria-label={t('story.nextYear')}
+        >
+          <ChevronRightIcon className={classes.navArrowIcon} />
+        </IconButton>
       </Box>
 
       <Box

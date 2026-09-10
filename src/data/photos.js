@@ -9,7 +9,7 @@ export const CDN_BASE_URL = "https://api.awense.com/api/img/";
 // compressed: 3358d888, original: 448a848f
 const files = [
   { code: "3358d888", local: "/background/DSC_6971.jpeg" },
-  "63744223",
+  { code: "63744223", local:"/background/Calendar.jpg" },
   "e10a8279",
   "759fa3b7",
   "be8af780",

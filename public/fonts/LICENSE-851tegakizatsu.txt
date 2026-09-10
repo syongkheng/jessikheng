@@ -1,0 +1,16 @@
+851Tegaki Zatsu (851手書き雑フォント) — subsetted for tegaki851-names.woff2
+
+Source / homepage: https://pm85122.onamae.jp/851fontpage.html
+Original file: 851tegaki_zatsu_normal_0883.ttf (28.6MB, ~34,000 glyphs)
+This project ships only a 6-glyph subset (the Chinese characters in the
+couple's name: 纪思佳佘榮钦), converted to WOFF2.
+
+License summary, per the author's terms page (in Japanese) as of 2026-09:
+- Free for personal and commercial use, no permission required.
+- Free to modify and redistribute (this subset is such a modification).
+- Do not claim authorship of the font itself.
+- Do not sell the font itself; copyright remains with the original author.
+- Provided as-is, with no warranty from the author.
+
+This file is included as an attribution/terms reference alongside the font
+asset. Consult the homepage above for the authoritative, complete terms.

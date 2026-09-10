@@ -1,3 +1,16 @@
+/* Self-hosted, subsetted to only the couple's Chinese name (Hero/TheCouple)
+   — see public/fonts/LICENSE-851tegakizatsu.txt for license terms/source.
+   Free-text Chinese names elsewhere (e.g. the RSVP status page) keep using
+   the full "Zhi Mang Xing" Google Font instead, since this subset only
+   contains the glyphs for "纪思佳佘榮钦". */
+@font-face {
+  font-family: 'Tegaki851';
+  src: url('/fonts/tegaki851-names.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 * {
   box-sizing: border-box;
 }

@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     gap: theme.spacing(1),
     padding: theme.spacing(2),
+    width: 192,
     borderRadius: theme.shape.borderRadius * 3,
     backgroundColor: theme.palette.background.paper,
     boxShadow: '0 12px 24px rgba(0, 0, 0, 0.18)',

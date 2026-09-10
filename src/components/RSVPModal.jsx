@@ -24,16 +24,14 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import CloseIcon from "@mui/icons-material/Close";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { useTranslation } from "react-i18next";
 import FloralSprig from "./decor/FloralSprig.jsx";
 import LazyImage from "./LazyImage.jsx";
 import LanguageSwitcher from "./LanguageSwitcher.jsx";
 import { photos } from "../data/photos.js";
+import { RSVP_ENDPOINT } from "../utils/rsvpApi.js";
 
-const API_BASE_URL = import.meta.env.DEV
-  ? "http://localhost:3000"
-  : "https://api.awense.com";
-const RSVP_ENDPOINT = `${API_BASE_URL}/wedding/rsvp`;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_ADDITIONAL_GUESTS = 8;
 
@@ -216,6 +214,88 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     gap: theme.spacing(2),
   },
+  successWrap: {
+    textAlign: "center",
+    padding: theme.spacing(1, 0),
+  },
+  successSprig: {
+    width: 44,
+    height: 44,
+    margin: "0 auto",
+    marginBottom: theme.spacing(1),
+    color: theme.palette.secondary.dark,
+    opacity: 0.7,
+  },
+  successHeading: {
+    color: theme.palette.text.primary,
+    marginBottom: theme.spacing(1),
+  },
+  successMessage: {
+    color: theme.palette.text.secondary,
+    marginBottom: theme.spacing(3),
+  },
+  reservationCard: {
+    position: "relative",
+    overflow: "hidden",
+    margin: theme.spacing(0, 0, 3),
+    padding: theme.spacing(2.5),
+    borderRadius: theme.shape.borderRadius * 2,
+    backgroundColor: theme.palette.background.default,
+    border: `1px solid ${theme.palette.secondary.light}`,
+  },
+  reservationCardSprig: {
+    position: "absolute",
+    top: -10,
+    right: -10,
+    width: 38,
+    height: 38,
+    color: theme.palette.secondary.dark,
+    opacity: 0.5,
+    transform: "rotate(25deg)",
+  },
+  reservationRow: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: theme.spacing(1),
+    marginTop: theme.spacing(0.5),
+    marginBottom: theme.spacing(1.5),
+  },
+  reservationCode: {
+    fontFamily: '"Playfair Display", "Georgia", serif',
+    fontSize: "2rem",
+    fontWeight: 700,
+    letterSpacing: "0.3em",
+    // Compensates the trailing edge of that letter-spacing so the code
+    // still optically centers instead of drifting right.
+    paddingLeft: "0.3em",
+    color: theme.palette.text.primary,
+  },
+  statusChip: {
+    display: "inline-block",
+    padding: theme.spacing(0.5, 2),
+    borderRadius: theme.shape.borderRadius * 4,
+    fontSize: "0.75rem",
+    fontWeight: 600,
+    letterSpacing: "0.05em",
+    textTransform: "uppercase",
+  },
+  statusChipYes: {
+    backgroundColor: "rgba(138, 154, 91, 0.16)",
+    color: theme.palette.primary.dark,
+  },
+  statusChipNo: {
+    backgroundColor: "rgba(165, 42, 42, 0.1)",
+    color: "#A52A2A",
+  },
+  successActions: {
+    display: "flex",
+    flexDirection: "column",
+    gap: theme.spacing(1.5),
+  },
+  wideButton: {
+    width: "100%",
+  },
   navRow: {
     display: "flex",
     justifyContent: "space-between",
@@ -239,7 +319,7 @@ const initialFormState = {
   message: "",
 };
 
-function RSVPModal({ open, onClose }) {
+function RSVPModal({ open, onClose, onViewStatus }) {
   // Same breakpoint PhoneFrame uses to decide framed-desktop vs real-phone
   // rendering, so this modal always matches whichever "screen" is current.
   const isPhone = useMediaQuery("(max-width:800px)");
@@ -250,17 +330,24 @@ function RSVPModal({ open, onClose }) {
   const [errors, setErrors] = useState({});
   const [currentStep, setCurrentStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [submittedPin, setSubmittedPin] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [infoMessage, setInfoMessage] = useState("");
+  const [checkingRsvp, setCheckingRsvp] = useState(false);
   const rsvpPhoto = photos[0];
 
-  // Always all three steps — even when attending is "no" or an edited
-  // RSVP has no additional guests — so the Event step (and its guest
-  // stepper) never disappears from the wizard.
-  const steps = ["details", "event", "message"];
+  // Name is its own first step so the existing-RSVP lookup (which can
+  // overwrite `attending` and every other field from the server) happens
+  // before the guest ever sets those fields — otherwise a lookup triggered
+  // by the same "Next" click that just captured their attending choice
+  // would silently revert it. Always all four steps — even when attending
+  // is "no" or an edited RSVP has no additional guests — so the Guest
+  // Details step (and its guest stepper) never disappears from the wizard.
+  const steps = ["lookup", "details", "event", "message"];
   const stepName = steps[Math.min(currentStep, steps.length - 1)];
   const stepLabels = {
+    lookup: t("rsvp.stepLookup"),
     details: t("rsvp.stepDetails"),
     event: t("rsvp.stepEvent"),
     message: t("rsvp.stepMessage"),
@@ -335,11 +422,17 @@ function RSVPModal({ open, onClose }) {
     }
   };
 
-  const validateDetailsStep = () => {
+  const validateLookupStep = () => {
     const nextErrors = {};
     if (!form.name.trim()) {
       nextErrors.name = t("rsvp.errors.nameRequired");
     }
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
+  const validateDetailsStep = () => {
+    const nextErrors = {};
     if (form.email.trim() && !EMAIL_PATTERN.test(form.email.trim())) {
       nextErrors.email = t("rsvp.errors.emailInvalid");
     }
@@ -365,16 +458,20 @@ function RSVPModal({ open, onClose }) {
 
   const handleNext = async () => {
     const isValid =
-      stepName === "details"
-        ? validateDetailsStep()
-        : stepName === "event"
-          ? validateEventStep()
-          : true;
+      stepName === "lookup"
+        ? validateLookupStep()
+        : stepName === "details"
+          ? validateDetailsStep()
+          : stepName === "event"
+            ? validateEventStep()
+            : true;
     if (!isValid) {
       return;
     }
-    if (stepName === "details") {
+    if (stepName === "lookup") {
+      setCheckingRsvp(true);
       await lookupExistingRsvp();
+      setCheckingRsvp(false);
     }
     setErrors({});
     setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
@@ -429,6 +526,7 @@ function RSVPModal({ open, onClose }) {
 
       if (response.ok && body?.status === "Ok") {
         setSubmitted(true);
+        setSubmittedPin(body?.data?.pin ?? null);
       } else {
         setSubmitError(t("rsvp.submitError"));
       }
@@ -444,8 +542,21 @@ function RSVPModal({ open, onClose }) {
     setErrors({});
     setCurrentStep(0);
     setSubmitted(false);
+    setSubmittedPin(null);
     setSubmitError("");
     setInfoMessage("");
+    setCheckingRsvp(false);
+  };
+
+  const handleCopyReservationId = async () => {
+    if (!submittedPin) return;
+    try {
+      await navigator.clipboard.writeText(submittedPin);
+      setInfoMessage(t("rsvp.copiedReservationId"));
+    } catch {
+      // Clipboard API can be unavailable (e.g. non-secure context) — the ID
+      // is still visible on screen to copy by hand.
+    }
   };
 
   const handleClose = () => {
@@ -488,22 +599,66 @@ function RSVPModal({ open, onClose }) {
             {t("rsvp.heading")}
           </Typography>
           <FloralSprig variant="bloom" className={classes.headingSprig} />
-          {/* <LanguageSwitcher /> */}
+          <LanguageSwitcher />
         </Box>
 
         {submitted ? (
-          <Box className={classes.form}>
-            <Alert severity="success">
+          <Box className={classes.successWrap}>
+            <FloralSprig variant="bloom" className={classes.successSprig} />
+            <Typography variant="h3" className={classes.successHeading}>
+              {t("rsvp.successHeading")}
+            </Typography>
+            <Typography variant="body1" className={classes.successMessage}>
               {t("rsvp.successMessage", { name: form.name })}
-            </Alert>
-            <Button
-              className={classes.outlinedRedButton}
-              variant="outlined"
-              color="primary"
-              onClick={handleReset}
-            >
-              {t("rsvp.resubmit")}
-            </Button>
+            </Typography>
+
+            {submittedPin && (
+              <Box className={classes.reservationCard}>
+                <FloralSprig variant="leaf" className={classes.reservationCardSprig} />
+                <Typography variant="overline" className={classes.sectionLabel}>
+                  {t("rsvp.reservationIdLabel")}
+                </Typography>
+                <Box className={classes.reservationRow}>
+                  <Typography className={classes.reservationCode}>{submittedPin}</Typography>
+                  <IconButton
+                    size="small"
+                    onClick={handleCopyReservationId}
+                    aria-label={t("rsvp.copyReservationId")}
+                  >
+                    <ContentCopyIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+                <Box
+                  component="span"
+                  className={`${classes.statusChip} ${
+                    form.attending === "yes" ? classes.statusChipYes : classes.statusChipNo
+                  }`}
+                >
+                  {form.attending === "yes"
+                    ? t("rsvp.attendingStatus")
+                    : t("rsvp.notAttendingStatus")}
+                </Box>
+              </Box>
+            )}
+
+            <Box className={classes.successActions}>
+              <Button
+                className={`${classes.wideButton} ${classes.containedRedButton}`}
+                variant="contained"
+                color="primary"
+                onClick={() => onViewStatus?.(submittedPin)}
+              >
+                {t("rsvp.viewStatus")}
+              </Button>
+              <Button
+                className={`${classes.wideButton} ${classes.outlinedRedButton}`}
+                variant="outlined"
+                color="primary"
+                onClick={handleReset}
+              >
+                {t("rsvp.resubmit")}
+              </Button>
+            </Box>
           </Box>
         ) : (
           <>
@@ -534,13 +689,17 @@ function RSVPModal({ open, onClose }) {
               onSubmit={handleSubmit}
               noValidate
             >
-              {stepName === "details" && (
+              {stepName === "lookup" && (
                 <>
                   <Typography
                     variant="overline"
                     className={classes.sectionLabel}
                   >
-                    {t("rsvp.yourDetailsHeading")}
+                    {t("rsvp.lookupHeading")}
+                  </Typography>
+
+                  <Typography variant="body2" className={classes.subheading}>
+                    {t("rsvp.lookupHint")}
                   </Typography>
 
                   <TextField
@@ -551,6 +710,17 @@ function RSVPModal({ open, onClose }) {
                     helperText={errors.name}
                     required
                   />
+                </>
+              )}
+
+              {stepName === "details" && (
+                <>
+                  <Typography
+                    variant="overline"
+                    className={classes.sectionLabel}
+                  >
+                    {t("rsvp.yourDetailsHeading")}
+                  </Typography>
 
                   <TextField
                     label={t("rsvp.emailLabel")}
@@ -698,7 +868,7 @@ function RSVPModal({ open, onClose }) {
                     variant="outlined"
                     color="primary"
                     onClick={handleBack}
-                    disabled={submitting}
+                    disabled={submitting || checkingRsvp}
                   >
                     {t("rsvp.back")}
                   </Button>
@@ -712,8 +882,9 @@ function RSVPModal({ open, onClose }) {
                     variant="contained"
                     color="primary"
                     onClick={handleNext}
+                    disabled={checkingRsvp}
                   >
-                    {t("rsvp.next")}
+                    {checkingRsvp ? t("rsvp.checking") : t("rsvp.next")}
                   </Button>
                 ) : (
                   <Button
