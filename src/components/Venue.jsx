@@ -71,6 +71,23 @@ const useStyles = makeStyles((theme) => ({
     width: 260,
     paddingTop: theme.spacing(2),
   },
+  // Landscape photos at native ratio, full-bleed, read as short cramped
+  // strips next to the site's portrait photos — not because the crop is
+  // wrong, but because full-bleed reads as "this is meant to be tall" and a
+  // short wide result looks like an accident. Insetting from the edges (the
+  // same mat/frame idea as TimelineCarousel's slideFrame) keeps the full
+  // photo — nothing cropped — but reads as a deliberate "wide plate" instead.
+  photoMat: {
+    padding: theme.spacing(0, 3),
+    marginTop: theme.spacing(5),
+  },
+  photoFrame: {
+    display: "block",
+    width: "100%",
+    height: "auto",
+    borderRadius: theme.shape.borderRadius * 1.5,
+    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.16)",
+  },
 }));
 
 function Venue() {
@@ -99,26 +116,26 @@ function Venue() {
         </Box>
       </Box>
       {backviewPhoto && (
-        <div style={{ marginTop: "40px" }}>
+        <Box className={classes.photoMat}>
           <LazyImage
             src={backviewPhoto.src}
             alt={backviewPhoto.alt}
-            wrapperClassName={classes.image}
+            wrapperClassName={classes.photoFrame}
             placeholderHeight={420}
             placeholderVariant="leaf"
           />
-        </div>
+        </Box>
       )}
       {bridgePhoto && (
-        <div style={{ marginTop: "40px" }}>
+        <Box className={classes.photoMat}>
           <LazyImage
             src={bridgePhoto.src}
             alt={bridgePhoto.alt}
-            wrapperClassName={classes.image}
+            wrapperClassName={classes.photoFrame}
             placeholderHeight={420}
             placeholderVariant="leaf"
           />
-        </div>
+        </Box>
       )}
     </Box>
   );
