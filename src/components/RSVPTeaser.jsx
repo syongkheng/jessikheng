@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import FloralSprig from "./decor/FloralSprig.jsx";
 import LazyImage from "./LazyImage.jsx";
 import { photos } from "../data/photos.js";
+import { RSVP_DEADLINE } from "../data/rsvpDeadline.js";
 
 const useStyles = makeStyles((theme) => ({
   // Fixed-height photo section, same pattern as Hero/Venue — size never
@@ -69,8 +70,13 @@ const useStyles = makeStyles((theme) => ({
 
 function RSVPTeaser({ onOpen }) {
   const classes = useStyles();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const rsvpPhoto = photos[0];
+
+  const formattedDeadline = new Intl.DateTimeFormat(
+    i18n.resolvedLanguage === "zh" ? "zh-CN" : "en-GB",
+    { day: "numeric", month: "long", year: "numeric" },
+  ).format(RSVP_DEADLINE);
 
   return (
     <Box id="rsvp" component="section" className={classes.imageWrap}>
@@ -92,10 +98,10 @@ function RSVPTeaser({ onOpen }) {
           <FloralSprig variant="bloom" className={classes.chipSprig} />
         </Box>
         <Typography variant="body1" className={classes.deadlineLabel}>
-          {t("rsvp.deadlineLabel")}
+          {t("rsvp.deadlineLabel", { date: formattedDeadline })}
         </Typography>
         <Typography variant="body1" className={classes.deadlineDate}>
-          {t("rsvp.deadlineDate")}
+          {formattedDeadline}
         </Typography>
         <Button
           className={classes.cta}

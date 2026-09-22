@@ -1,6 +1,7 @@
 import { makeStyles } from "@mui/styles";
 import { Box, Button, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { RSVP_DEADLINE } from "../data/rsvpDeadline.js";
 
 const useStyles = makeStyles((theme) => ({
   footer: {
@@ -36,12 +37,17 @@ const useStyles = makeStyles((theme) => ({
 // RSVP is always one tap away, regardless of scroll position.
 function FloatingRsvpButton({ onClick }) {
   const classes = useStyles();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const formattedDeadline = new Intl.DateTimeFormat(
+    i18n.resolvedLanguage === "zh" ? "zh-CN" : "en-GB",
+    { day: "numeric", month: "long", year: "numeric" },
+  ).format(RSVP_DEADLINE);
 
   return (
     <Box className={classes.footer}>
       <Typography variant="body2" className={classes.deadlineLabel}>
-        {t("rsvp.deadlineLabel")}
+        {t("rsvp.deadlineLabel", { date: formattedDeadline })}
       </Typography>
       <Button
         className={classes.cta}

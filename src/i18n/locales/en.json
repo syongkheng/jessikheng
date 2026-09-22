@@ -37,8 +37,11 @@
   },
   "story": {
     "heading": "Our Story",
-    "paragraph1": "We met on a rainy afternoon and haven't stopped talking since. What started as a chance conversation grew into years of laughter, adventure, and quiet Sunday mornings together.",
-    "paragraph2": "Through every season, we've found our favorite place is simply beside each other. Now we can't wait to begin our next chapter surrounded by the people we love most.",
+    "paragraph1": "We first met at 16, at NPCC CIBTC D14. We spent three weeks in the same squad and camp together — but honestly, neither of us remembers having much of an impression of the other!",
+    "paragraph2": "Fast forward to 2016, we signed up to be CIBTC J16 instructors and were assigned to the same mentoring group. When the actual course came around, we were paired up as partners — and that's when we really started getting to know each other.",
+    "paragraph3": "One course turned into another, and over the next year, we slowly became a bigger part of each other's lives.",
+    "paragraph4": "Since then, we've grown up together through National Service, university, our first jobs, and everything in between.",
+    "paragraph5": "Now, at 29, we'll be married — having spent almost half our lives together.",
     "previousYear": "Previous year",
     "nextYear": "Next year"
   },
@@ -52,8 +55,7 @@
     "heading": "RSVP",
     "rsvpButtonLabel": "RSVP Now",
     "dateTimeLabel": "28 March 2027, 12:30 PM",
-    "deadlineLabel": "Kindly respond by 1 February 2027" ,
-    "deadlineDate": "1 February 2027",
+    "deadlineLabel": "Kindly respond by {{date}}",
     "stepIndicator": "Step {{current}} of {{total}}",
     "stepLookup": "Name",
     "stepDetails": "RSVP",

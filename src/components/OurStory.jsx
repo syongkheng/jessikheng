@@ -35,8 +35,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// Replace the story.paragraph1/paragraph2 keys in the locale files with the
-// couple's real story.
 function OurStory() {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -56,6 +54,15 @@ function OurStory() {
           </Typography>
           <Typography variant="body1" className={classes.paragraph}>
             {t("story.paragraph2")}
+          </Typography>
+          <Typography variant="body1" className={classes.paragraph}>
+            {t("story.paragraph3")}
+          </Typography>
+          <Typography variant="body1" className={classes.paragraph}>
+            {t("story.paragraph4")}
+          </Typography>
+          <Typography variant="body1" className={classes.paragraph}>
+            {t("story.paragraph5")}
           </Typography>
         </Box>
       </Box>
