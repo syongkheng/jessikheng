@@ -76,7 +76,7 @@ function App() {
       {/* <Gallery /> */}
       {/* <RSVPTeaser onOpen={openRsvp} /> */}
       <Footer />
-      <FloatingRsvpButton onClick={openRsvp} />
+      <FloatingRsvpButton onClick={openRsvp} onCheckStatus={() => goToStatus()} />
       <RSVPModal
         open={rsvpOpen}
         onClose={() => setRsvpOpen(false)}

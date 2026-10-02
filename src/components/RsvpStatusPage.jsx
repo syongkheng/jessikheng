@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { makeStyles } from "@mui/styles";
 import { Box, Typography, TextField, Button, IconButton, Snackbar, Alert } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -183,24 +183,28 @@ function RsvpStatusPage({ prefillQuery, onBack }) {
   const { t, i18n } = useTranslation();
   const isZh = i18n.resolvedLanguage === "zh";
   const nameFontClass = isZh ? classes.resultNameZh : classes.resultNameEn;
-  const [query, setQuery] = useState(prefillQuery || "");
+  // A /status/:pin deep link pre-fills the pin only — the guest still has to
+  // type their name, since the status check now requires BOTH name and pin.
+  const [name, setName] = useState("");
+  const [pin, setPin] = useState(
+    prefillQuery && looksLikePin(prefillQuery) ? normalizePin(prefillQuery) : "",
+  );
   const [searching, setSearching] = useState(false);
   const [searched, setSearched] = useState(false);
   const [matches, setMatches] = useState([]);
   const [searchError, setSearchError] = useState("");
   const rsvpPhoto = photos[0];
 
-  const runSearch = async (rawQuery) => {
-    const trimmed = rawQuery.trim();
-    if (!trimmed) return;
+  const runSearch = async (rawName, rawPin) => {
+    const trimmedName = rawName.trim();
+    const normalizedPin = normalizePin(rawPin);
+    if (!trimmedName || !normalizedPin) return;
 
     setSearching(true);
     setSearchError("");
 
     try {
-      const url = looksLikePin(trimmed)
-        ? `${RSVP_STATUS_ENDPOINT}?pin=${normalizePin(trimmed)}`
-        : `${RSVP_STATUS_ENDPOINT}?name=${encodeURIComponent(trimmed)}`;
+      const url = `${RSVP_STATUS_ENDPOINT}?name=${encodeURIComponent(trimmedName)}&pin=${normalizedPin}`;
 
       const response = await fetch(url);
       const body = await response.json().catch(() => null);
@@ -220,18 +224,9 @@ function RsvpStatusPage({ prefillQuery, onBack }) {
     }
   };
 
-  // Runs once on mount for a prefilled query only — not tied to
-  // `prefillQuery`'s identity, since the user's own edits to the field
-  // afterwards shouldn't re-trigger it.
-  useEffect(() => {
-    if (prefillQuery) {
-      runSearch(prefillQuery);
-    }
-  }, []);
-
   const handleSubmit = (event) => {
     event.preventDefault();
-    runSearch(query);
+    runSearch(name, pin);
   };
 
   return (
@@ -264,16 +259,22 @@ function RsvpStatusPage({ prefillQuery, onBack }) {
             {t("rsvp.statusSearchHint")}
           </Typography>
           <TextField
-            label={t("rsvp.statusSearchLabel")}
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            label={t("rsvp.statusNameLabel")}
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+          />
+          <TextField
+            label={t("rsvp.statusPinLabel")}
+            value={pin}
+            onChange={(event) => setPin(event.target.value)}
+            inputProps={{ inputMode: "numeric", maxLength: 4 }}
           />
           <Button
             type="submit"
             className={classes.searchButton}
             variant="contained"
             color="primary"
-            disabled={searching || !query.trim()}
+            disabled={searching || !name.trim() || !normalizePin(pin)}
           >
             {searching ? t("rsvp.statusSearching") : t("rsvp.statusSearchButton")}
           </Button>
@@ -347,7 +348,7 @@ function RsvpStatusPage({ prefillQuery, onBack }) {
           ) : (
             <Box className={classes.emptyState}>
               <Typography variant="body1">
-                {t("rsvp.statusNoResults", { query: query.trim() })}
+                {t("rsvp.statusNoResults", { query: name.trim() })}
               </Typography>
             </Box>
           )

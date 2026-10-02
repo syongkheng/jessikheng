@@ -30,7 +30,12 @@ import FloralSprig from "./decor/FloralSprig.jsx";
 import LazyImage from "./LazyImage.jsx";
 import LanguageSwitcher from "./LanguageSwitcher.jsx";
 import { photos } from "../data/photos.js";
-import { RSVP_ENDPOINT } from "../utils/rsvpApi.js";
+import {
+  RSVP_ENDPOINT,
+  RSVP_PREFLIGHT_ENDPOINT,
+  RSVP_RECOVER_PIN_ENDPOINT,
+} from "../utils/rsvpApi.js";
+import { normalizePin } from "../utils/reservationId.js";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_ADDITIONAL_GUESTS = 8;
@@ -338,6 +343,13 @@ function RSVPModal({ open, onClose, onViewStatus }) {
   const [submitError, setSubmitError] = useState("");
   const [infoMessage, setInfoMessage] = useState("");
   const [checkingRsvp, setCheckingRsvp] = useState(false);
+  // Existing-RSVP edit sub-step (within the lookup step): once the name is found
+  // to already have an RSVP, the guest must enter its PIN to edit it.
+  const [awaitingPin, setAwaitingPin] = useState(false);
+  const [existingHasEmail, setExistingHasEmail] = useState(false);
+  const [pinInput, setPinInput] = useState("");
+  const [pinError, setPinError] = useState("");
+  const [recovering, setRecovering] = useState(false);
   const rsvpPhoto = photos[0];
 
   // Name is its own first step so the existing-RSVP lookup (which can
@@ -384,44 +396,125 @@ function RSVPModal({ open, onClose, onViewStatus }) {
     });
   };
 
-  // Re-submitting an already-registered name overwrites that person's
-  // previous RSVP server-side (see qindom's WeddingValidator/Service), so
-  // this just fetches it to pre-fill the form — the actual update-vs-insert
-  // decision happens transparently on submit, keyed off name alone.
-  const lookupExistingRsvp = async () => {
+  // Step-1 existence check. Throws on network/HTTP failure so the caller can
+  // show a toast and keep the user on step 1.
+  const runPreflight = async (name) => {
+    const response = await fetch(RSVP_PREFLIGHT_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    const body = await response.json().catch(() => null);
+    if (!response.ok || body?.status !== "Ok") {
+      throw new Error("preflight failed");
+    }
+    return body.data; // { exists, hasEmail }
+  };
+
+  // Loads an existing RSVP for editing once name + PIN are both supplied.
+  // Returns the self-view object, or null when the PIN doesn't match. Throws on
+  // network/HTTP failure.
+  const loadExistingRsvp = async (name, pin) => {
+    const response = await fetch(
+      `${RSVP_ENDPOINT}?name=${encodeURIComponent(name)}&pin=${encodeURIComponent(pin)}`,
+    );
+    const body = await response.json().catch(() => null);
+    if (!response.ok || body?.status !== "Ok") {
+      throw new Error("lookup failed");
+    }
+    return body.data?.found ? body.data.rsvp : null;
+  };
+
+  const prefillFromRsvp = (rsvp) => {
+    const you = rsvp?.you ?? {};
+    const guestNames = Array.isArray(rsvp?.guestNames) ? rsvp.guestNames : [];
+    setForm((prev) => ({
+      ...prev,
+      name: you.name ?? prev.name,
+      email: you.email ?? "",
+      contactNumber: you.contactNumber ?? "",
+      attending: you.attending ? "yes" : "no",
+      dietaryRestrictions: you.dietaryRestrictions ?? "",
+      meal: you.mealPreference ?? "",
+      additionalGuestCount: guestNames.length,
+      guestNames,
+      message: you.message ?? "",
+    }));
+  };
+
+  const handleForgotPin = async () => {
     const name = form.name.trim();
-    if (!name) {
+    if (!name) return;
+    setRecovering(true);
+    try {
+      const response = await fetch(RSVP_RECOVER_PIN_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      const body = await response.json().catch(() => null);
+      if (!response.ok || body?.status !== "Ok") {
+        setSubmitError(t("rsvp.lookupFailed"));
+        return;
+      }
+      // Email on file → PIN sent; no email → tell them to contact the couple.
+      setInfoMessage(body.data?.sent ? t("rsvp.pinSent") : t("rsvp.contactCouple"));
+    } catch {
+      setSubmitError(t("rsvp.lookupFailed"));
+    } finally {
+      setRecovering(false);
+    }
+  };
+
+  // Drives the first step: existence check, then (if found) the PIN sub-step.
+  const handleLookupNext = async () => {
+    if (!validateLookupStep()) return;
+    const name = form.name.trim();
+
+    // Sub-step: verify the PIN and load the existing RSVP for editing.
+    if (awaitingPin) {
+      const normalizedPin = normalizePin(pinInput);
+      if (!normalizedPin) {
+        setPinError(t("rsvp.errors.pinRequired"));
+        return;
+      }
+      setCheckingRsvp(true);
+      try {
+        const rsvp = await loadExistingRsvp(name, normalizedPin);
+        if (!rsvp) {
+          setPinError(t("rsvp.pinIncorrect"));
+          return;
+        }
+        prefillFromRsvp(rsvp);
+        setInfoMessage(t("rsvp.foundExisting"));
+        setAwaitingPin(false);
+        setPinError("");
+        setErrors({});
+        setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+      } catch {
+        setSubmitError(t("rsvp.lookupFailed"));
+      } finally {
+        setCheckingRsvp(false);
+      }
       return;
     }
 
+    // First press: does this name already have an RSVP?
+    setCheckingRsvp(true);
     try {
-      const response = await fetch(
-        `${RSVP_ENDPOINT}?name=${encodeURIComponent(name)}`,
-      );
-      const body = await response.json().catch(() => null);
-      const rsvp = body?.data?.found ? body.data.rsvp : null;
-      if (!rsvp) {
+      const { exists, hasEmail } = await runPreflight(name);
+      if (exists) {
+        setExistingHasEmail(hasEmail);
+        setAwaitingPin(true); // reveal the PIN sub-step; stay on step 1
         return;
       }
-
-      setForm((prev) => ({
-        ...prev,
-        name: rsvp.name ?? prev.name,
-        email: rsvp.email ?? prev.email,
-        contactNumber: rsvp.contactNumber ?? "",
-        attending: rsvp.attending ? "yes" : "no",
-        dietaryRestrictions: rsvp.dietaryRestrictions ?? "",
-        meal: rsvp.mealPreference ?? "",
-        additionalGuestCount: rsvp.additionalGuestContact?.length ?? 0,
-        guestNames: (rsvp.additionalGuestContact ?? []).map(
-          (guest) => guest.name ?? "",
-        ),
-        message: rsvp.message ?? "",
-      }));
-      setInfoMessage(t("rsvp.foundExisting"));
+      // New RSVP → carry on to the details step.
+      setErrors({});
+      setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
     } catch {
-      // Best-effort convenience lookup — if it fails, the user just fills
-      // the form in fresh, same as before this feature existed.
+      setSubmitError(t("rsvp.lookupFailed")); // toast, stay on step 1
+    } finally {
+      setCheckingRsvp(false);
     }
   };
 
@@ -460,21 +553,18 @@ function RSVPModal({ open, onClose, onViewStatus }) {
   };
 
   const handleNext = async () => {
-    const isValid =
-      stepName === "lookup"
-        ? validateLookupStep()
-        : stepName === "details"
-          ? validateDetailsStep()
-          : stepName === "event"
-            ? validateEventStep()
-            : true;
-    if (!isValid) {
+    if (stepName === "lookup") {
+      await handleLookupNext();
       return;
     }
-    if (stepName === "lookup") {
-      setCheckingRsvp(true);
-      await lookupExistingRsvp();
-      setCheckingRsvp(false);
+    const isValid =
+      stepName === "details"
+        ? validateDetailsStep()
+        : stepName === "event"
+          ? validateEventStep()
+          : true;
+    if (!isValid) {
+      return;
     }
     setErrors({});
     setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
@@ -549,6 +639,11 @@ function RSVPModal({ open, onClose, onViewStatus }) {
     setSubmitError("");
     setInfoMessage("");
     setCheckingRsvp(false);
+    setAwaitingPin(false);
+    setExistingHasEmail(false);
+    setPinInput("");
+    setPinError("");
+    setRecovering(false);
   };
 
   const handleCopyReservationId = async () => {
@@ -715,11 +810,60 @@ function RSVPModal({ open, onClose, onViewStatus }) {
                   <TextField
                     label={t("rsvp.nameLabel")}
                     value={form.name}
-                    onChange={handleChange("name")}
+                    onChange={(event) => {
+                      handleChange("name")(event);
+                      // Editing the name invalidates any in-progress PIN step.
+                      if (awaitingPin) {
+                        setAwaitingPin(false);
+                        setPinInput("");
+                        setPinError("");
+                      }
+                    }}
                     error={Boolean(errors.name)}
                     helperText={errors.name}
                     required
+                    disabled={checkingRsvp}
                   />
+
+                  {awaitingPin && (
+                    <>
+                      <Typography
+                        variant="body2"
+                        className={classes.subheading}
+                      >
+                        {t("rsvp.existingFoundEnterPin")}
+                      </Typography>
+
+                      <TextField
+                        label={t("rsvp.pinLabel")}
+                        value={pinInput}
+                        onChange={(event) => {
+                          setPinInput(event.target.value);
+                          if (pinError) setPinError("");
+                        }}
+                        error={Boolean(pinError)}
+                        helperText={pinError}
+                        inputProps={{ inputMode: "numeric", maxLength: 4 }}
+                        disabled={checkingRsvp}
+                      />
+
+                      {existingHasEmail ? (
+                        <Button
+                          type="button"
+                          variant="text"
+                          color="primary"
+                          onClick={handleForgotPin}
+                          disabled={recovering || checkingRsvp}
+                        >
+                          {recovering ? t("rsvp.sending") : t("rsvp.forgotPin")}
+                        </Button>
+                      ) : (
+                        <Typography variant="caption" color="textSecondary">
+                          {t("rsvp.contactCouple")}
+                        </Typography>
+                      )}
+                    </>
+                  )}
                 </>
               )}
 

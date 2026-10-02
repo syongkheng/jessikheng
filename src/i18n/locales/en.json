@@ -89,6 +89,14 @@
     "resubmit": "Submit another response",
     "submitError": "Something went wrong sending your RSVP. Please try again.",
     "foundExisting": "Welcome back! We've loaded your previous RSVP — feel free to update it.",
+    "existingFoundEnterPin": "This name already has an RSVP. Enter your 4-digit PIN to edit it.",
+    "pinLabel": "RSVP PIN",
+    "forgotPin": "Forgot your PIN? Email it to me",
+    "sending": "Sending…",
+    "pinSent": "We've emailed your PIN to the address on file.",
+    "contactCouple": "No email is on file for this RSVP — please contact the couple to recover your PIN.",
+    "pinIncorrect": "That PIN doesn't match this name. Please try again.",
+    "lookupFailed": "Something went wrong checking your RSVP. Please try again.",
     "closeLabel": "Close RSVP form",
     "decreaseGuestsLabel": "Decrease guest count",
     "increaseGuestsLabel": "Increase guest count",
@@ -99,8 +107,9 @@
     "attendingStatus": "Attending",
     "notAttendingStatus": "Not Attending",
     "statusPageHeading": "RSVP Status",
-    "statusSearchLabel": "Name or PIN",
-    "statusSearchHint": "Enter your name, or the 4-digit PIN from your confirmation, to check your RSVP status.",
+    "statusNameLabel": "Name",
+    "statusPinLabel": "PIN",
+    "statusSearchHint": "Enter your name and the 4-digit PIN from your confirmation to check your RSVP status.",
     "statusSearchButton": "Check Status",
     "statusSearching": "Searching…",
     "statusSearchError": "Something went wrong looking that up. Please try again.",
@@ -114,7 +123,8 @@
       "nameRequired": "Please enter your name",
       "emailInvalid": "Please enter a valid email address",
       "attendingRequired": "Please let us know if you can make it",
-      "guestNameRequired": "Please enter this guest's name"
+      "guestNameRequired": "Please enter this guest's name",
+      "pinRequired": "Please enter your 4-digit PIN"
     }
   },
   "footer": {

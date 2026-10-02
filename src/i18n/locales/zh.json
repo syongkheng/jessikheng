@@ -87,6 +87,14 @@
     "resubmit": "再次提交",
     "submitError": "提交回复时发生错误，请稍后再试。",
     "foundExisting": "欢迎回来！我们已载入您先前的回复，欢迎更新。",
+    "existingFoundEnterPin": "此姓名已有回复记录。请输入您的4位数PIN码以进行修改。",
+    "pinLabel": "回复PIN码",
+    "forgotPin": "忘记PIN码？寄送到我的邮箱",
+    "sending": "寄送中…",
+    "pinSent": "我们已将您的PIN码寄送至登记的邮箱。",
+    "contactCouple": "此回复没有登记邮箱——请联系新人以找回您的PIN码。",
+    "pinIncorrect": "PIN码与此姓名不符，请重试。",
+    "lookupFailed": "查询回复时发生错误，请重试。",
     "closeLabel": "关闭回复表单",
     "decreaseGuestsLabel": "减少同行嘉宾人数",
     "increaseGuestsLabel": "增加同行嘉宾人数",
@@ -97,8 +105,9 @@
     "attendingStatus": "出席",
     "notAttendingStatus": "缺席",
     "statusPageHeading": "回复状态查询",
-    "statusSearchLabel": "姓名或PIN码",
-    "statusSearchHint": "请输入您的姓名，或确认页面上的4位数PIN码，以查询回复状态。",
+    "statusNameLabel": "姓名",
+    "statusPinLabel": "PIN码",
+    "statusSearchHint": "请输入您的姓名和确认页面上的4位数PIN码，以查询回复状态。",
     "statusSearchButton": "查询状态",
     "statusSearching": "查询中…",
     "statusSearchError": "查询时发生错误，请稍后再试。",
@@ -112,7 +121,8 @@
       "nameRequired": "请输入姓名",
       "emailInvalid": "请输入有效的电子邮箱地址",
       "attendingRequired": "请告诉我们您是否能出席",
-      "guestNameRequired": "请输入该嘉宾的姓名"
+      "guestNameRequired": "请输入该嘉宾的姓名",
+      "pinRequired": "请输入您的4位数PIN码"
     }
   },
   "footer": {

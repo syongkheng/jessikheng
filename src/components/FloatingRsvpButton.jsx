@@ -30,12 +30,21 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
     color: theme.palette.text.secondary,
   },
+  statusLink: {
+    marginTop: theme.spacing(0.75),
+    textTransform: "none",
+    textDecoration: "underline",
+    color: theme.palette.text.secondary,
+    fontWeight: 400,
+    minHeight: 0,
+    padding: 0,
+  },
 }));
 
 // Fixed full-width bar at the bottom of the screen (see PhoneFrame's
 // `device` transform for why this stays contained on the desktop mockup) so
 // RSVP is always one tap away, regardless of scroll position.
-function FloatingRsvpButton({ onClick }) {
+function FloatingRsvpButton({ onClick, onCheckStatus }) {
   const classes = useStyles();
   const { t, i18n } = useTranslation();
 
@@ -57,6 +66,16 @@ function FloatingRsvpButton({ onClick }) {
       >
         {t("rsvp.rsvpButtonLabel")}
       </Button>
+      {onCheckStatus && (
+        <Button
+          variant="text"
+          size="small"
+          className={classes.statusLink}
+          onClick={onCheckStatus}
+        >
+          {t("rsvp.viewStatus")}
+        </Button>
+      )}
     </Box>
   );
 }

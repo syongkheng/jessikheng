@@ -58,12 +58,6 @@ const useStyles = makeStyles((theme) => ({
     // index.css and public/fonts/LICENSE-851tegakizatsu.txt.
     fontFamily: '"Tegaki851", cursive !important',
   },
-  headlineLineLeft: {
-    textAlign: "left",
-  },
-  headlineLineRight: {
-    textAlign: "right",
-  },
   // Grid stacks image/topChip/bottomChip in the same cell, each chip sized
   // to its own content (justifySelf/alignSelf) rather than the full image.
   // Height is now fixed (not content-driven) so the portrait photo can be
@@ -178,15 +172,9 @@ function Hero() {
         </Typography>
         <Box
           component="span"
-          className={`${classes.headlineLine} ${headlineFontClass} ${classes.headlineLineLeft}`}
+          className={`${classes.headlineLine} ${headlineFontClass}`}
         >
-          {t("hero.coupleNameTwo")}
-        </Box>
-        <Box
-          component="span"
-          className={`${classes.headlineLine} ${headlineFontClass} ${classes.headlineLineRight}`}
-        >
-          &amp; {t("hero.coupleNameOne")}
+          {t("hero.coupleNameTwo")} &amp; {t("hero.coupleNameOne")}
         </Box>
         <WeddingDateVenue />
       </Box>

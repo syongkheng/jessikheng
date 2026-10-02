@@ -3,3 +3,5 @@ export const API_BASE_URL = import.meta.env.DEV
   : "https://api.awense.com";
 export const RSVP_ENDPOINT = `${API_BASE_URL}/wedding/rsvp`;
 export const RSVP_STATUS_ENDPOINT = `${RSVP_ENDPOINT}/status`;
+export const RSVP_PREFLIGHT_ENDPOINT = `${RSVP_ENDPOINT}/preflight`;
+export const RSVP_RECOVER_PIN_ENDPOINT = `${RSVP_ENDPOINT}/recover-pin`;

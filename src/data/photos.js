@@ -2,7 +2,7 @@
 // Each photo's `src` is resolved as `${CDN_BASE_URL}${file}`, unless the
 // entry has a `local` path — those are served straight from public/ for
 // photos that haven't been uploaded to the CDN yet.
-export const CDN_BASE_URL = "https://api.awense.com/api/img/";
+export const CDN_BASE_URL = "https://api.awense.com/img/";
 
 // c0f4b592 == 63744223, non-edited vs edited
 
