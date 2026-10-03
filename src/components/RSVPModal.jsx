@@ -348,6 +348,9 @@ function RSVPModal({ open, onClose, onViewStatus }) {
   const [awaitingPin, setAwaitingPin] = useState(false);
   const [existingHasEmail, setExistingHasEmail] = useState(false);
   const [pinInput, setPinInput] = useState("");
+  // PIN that unlocked the existing RSVP being edited — the backend requires it
+  // to overwrite that RSVP, so it's sent with the final submit.
+  const [verifiedPin, setVerifiedPin] = useState(null);
   const [pinError, setPinError] = useState("");
   const [recovering, setRecovering] = useState(false);
   const rsvpPhoto = photos[0];
@@ -486,6 +489,7 @@ function RSVPModal({ open, onClose, onViewStatus }) {
           return;
         }
         prefillFromRsvp(rsvp);
+        setVerifiedPin(normalizedPin);
         setInfoMessage(t("rsvp.foundExisting"));
         setAwaitingPin(false);
         setPinError("");
@@ -607,6 +611,7 @@ function RSVPModal({ open, onClose, onViewStatus }) {
               mealPreference: null,
             }))
           : [],
+      ...(verifiedPin ? { pin: verifiedPin } : {}),
     };
 
     try {
@@ -643,6 +648,7 @@ function RSVPModal({ open, onClose, onViewStatus }) {
     setExistingHasEmail(false);
     setPinInput("");
     setPinError("");
+    setVerifiedPin(null);
     setRecovering(false);
   };
 
@@ -812,6 +818,8 @@ function RSVPModal({ open, onClose, onViewStatus }) {
                     value={form.name}
                     onChange={(event) => {
                       handleChange("name")(event);
+                      // A verified PIN belongs to the name it was checked against.
+                      setVerifiedPin(null);
                       // Editing the name invalidates any in-progress PIN step.
                       if (awaitingPin) {
                         setAwaitingPin(false);
