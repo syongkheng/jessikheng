@@ -25,8 +25,8 @@ function readRoute() {
 }
 
 // `q` controls the RSVP UI, read from either `/?q=1` or `/#?q=1`:
-//   q=0 (or missing) → RSVP footer hidden
-//   q=1              → RSVP footer shown
+//   q=0 (or missing) → RSVP footer shown
+//   q=1              → RSVP footer hidden
 //   q=2              → RSVP footer shown and the RSVP modal opens straight away
 function readRsvpMode(route) {
   const hashQuery = route.includes('?') ? route.slice(route.indexOf('?')) : ''
@@ -55,7 +55,7 @@ function App() {
   // Only the initial URL opens the modal; later hash changes don't reopen it.
   const [rsvpOpen, setRsvpOpen] = useState(() => readRsvpMode(readRoute()) === 2)
   const openRsvp = () => setRsvpOpen(true)
-  const showRsvpFooter = readRsvpMode(route) >= 1
+  const showRsvpFooter = readRsvpMode(route) !== 1
 
   useEffect(() => {
     const onHashChange = () => setRoute(readRoute())
