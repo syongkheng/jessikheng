@@ -246,11 +246,11 @@ function RsvpStatusPage({ prefillQuery, onBack }) {
 
       <Box className={classes.card}>
         <Box className={classes.headingRow}>
-          <FloralSprig variant="bloom" className={classes.headingSprig} />
+          <FloralSprig variant="blossom" className={classes.headingSprig} />
           <Typography variant="h4" className={classes.heading}>
             {t("rsvp.statusPageHeading")}
           </Typography>
-          <FloralSprig variant="bloom" className={classes.headingSprig} />
+          <FloralSprig variant="blossom" className={classes.headingSprig} />
           <LanguageSwitcher />
         </Box>
 
@@ -285,7 +285,7 @@ function RsvpStatusPage({ prefillQuery, onBack }) {
             <Box className={classes.resultsList}>
               {matches.map((match) => (
                 <Box key={match.pin} className={classes.resultCard}>
-                  <FloralSprig variant="leaf" className={classes.resultCardSprig} />
+                  <FloralSprig variant="buds" className={classes.resultCardSprig} />
                   <Box className={classes.resultTopRow}>
                     <Typography
                       variant="h6"

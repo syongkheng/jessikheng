@@ -82,9 +82,11 @@ function TheCouple() {
   const headlineFontClass = isZh
     ? classes.headlineLineZh
     : classes.headlineLineEn;
-  const groomPhoto = photos[1];
-  const bridePhoto = photos[1];
+  const groomPhoto = photos.filter((p) => p.key === "groom-kunming")[0];
+  const bridePhoto = photos.filter((p) => p.key === "bride-kunming")[0];
   const backviewPhoto = undefined // photos[3];
+
+  console.log("photos", photos);
 
   return (
     <div>
@@ -95,7 +97,7 @@ function TheCouple() {
             alt={backviewPhoto.alt}
             wrapperClassName={classes.image}
             placeholderHeight={420}
-            placeholderVariant="leaf"
+            placeholderVariant="vine"
           />
         </div>
       )}
@@ -108,7 +110,7 @@ function TheCouple() {
                 alt={groomPhoto.alt}
                 wrapperClassName={classes.image}
                 placeholderHeight={220}
-                placeholderVariant="leaf"
+                placeholderVariant="daisy"
               />
             )}
           </Box>
@@ -119,7 +121,7 @@ function TheCouple() {
                 alt={bridePhoto.alt}
                 wrapperClassName={classes.image}
                 placeholderHeight={220}
-                placeholderVariant="bloom"
+                placeholderVariant="tulip"
               />
             )}
           </Box>
@@ -141,7 +143,7 @@ function TheCouple() {
               variant="h6"
               className={`${classes.name} ${headlineFontClass}`}
             >
-              {t("hero.coupleNameTwo")}
+              {t("hero.coupleFullNameTwo")}
             </Typography>
           </Box>
           <Box className={`${classes.brideCol} ${classes.nameRow}`}>
@@ -149,7 +151,7 @@ function TheCouple() {
               variant="h6"
               className={`${classes.name} ${headlineFontClass}`}
             >
-              {t("hero.coupleNameOne")}
+              {t("hero.coupleFullNameOne")}
             </Typography>
           </Box>
         </Box>

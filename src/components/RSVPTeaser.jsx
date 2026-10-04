@@ -95,7 +95,7 @@ function RSVPTeaser({ onOpen }) {
           <Typography variant="h4" className={classes.heading}>
             {t("rsvp.heading")}
           </Typography>
-          <FloralSprig variant="bloom" className={classes.chipSprig} />
+          <FloralSprig variant="tulip" className={classes.chipSprig} />
         </Box>
         <Typography variant="body1" className={classes.deadlineLabel}>
           {t("rsvp.deadlineLabel", { date: formattedDeadline })}

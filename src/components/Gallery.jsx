@@ -42,7 +42,7 @@ function Gallery() {
 
   return (
     <Box id="gallery" component="section" className={classes.root}>
-      <FloralSprig variant="leaf" className={classes.headingSprig} />
+      <FloralSprig variant="daisy" className={classes.headingSprig} />
       <Typography variant="h4" className={classes.heading}>
         {t('gallery.heading')}
       </Typography>
@@ -54,7 +54,7 @@ function Gallery() {
             src={photo.src}
             alt={photo.alt}
             loading="lazy"
-            placeholderVariant={index % 2 === 0 ? 'leaf' : 'bloom'}
+            placeholderVariant={index % 2 === 0 ? 'olive' : 'lotus'}
           />
         ))}
       </Box>

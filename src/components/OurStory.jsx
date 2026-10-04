@@ -22,13 +22,22 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.secondary.dark,
     opacity: 0.6,
   },
+  closingSprig: {
+    display: "block",
+    width: 40,
+    height: 40,
+    margin: "0 auto",
+    paddingBottom: theme.spacing(2),
+    color: theme.palette.primary.dark,
+    opacity: 0.6,
+    boxSizing: "content-box",
+  },
   heading: {
     marginBottom: theme.spacing(3),
     color: theme.palette.text.primary,
     textAlign: "center",
   },
   paragraph: {
-    marginBottom: theme.spacing(2),
     color: theme.palette.text.secondary,
     lineHeight: 1.8,
     padding: theme.spacing(1, 6, 2, 6),
@@ -44,7 +53,6 @@ function OurStory() {
     <div>
       <Box id="our-story" component="section" className={classes.root}>
         <Box className={classes.inner}>
-          <FloralSprig variant="bloom" className={classes.headingSprig} />
           <Typography variant="h4" className={classes.heading}>
             {t("story.heading")}
           </Typography>

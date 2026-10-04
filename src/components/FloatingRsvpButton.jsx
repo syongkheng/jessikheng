@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
     height: 36,
     fontWeight: 520,
     backgroundColor: "#A52A2A",
+    marginBottom: theme.spacing(1),
   },
   deadlineLabel: {
     marginBottom: theme.spacing(1),
@@ -66,7 +67,7 @@ function FloatingRsvpButton({ onClick, onCheckStatus }) {
       >
         {t("rsvp.rsvpButtonLabel")}
       </Button>
-      {onCheckStatus && (
+      {/* {onCheckStatus && (
         <Button
           variant="text"
           size="small"
@@ -75,7 +76,7 @@ function FloatingRsvpButton({ onClick, onCheckStatus }) {
         >
           {t("rsvp.viewStatus")}
         </Button>
-      )}
+      )} */}
     </Box>
   );
 }

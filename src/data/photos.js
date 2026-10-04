@@ -13,14 +13,18 @@ const files = [
   "e10a8279",
   "759fa3b7",
   "be8af780",
+  { code: "", local:"/background/bride.png", key:"bride-kunming" },
+  { code: "", local:"/background/groom.png", key:"groom-kunming" },
 ];
 
 export const photos = files.map((file, index) => {
   const code = typeof file === "string" ? file : file.code;
   const local = typeof file === "string" ? null : file.local;
+  const key = typeof file === "string" ? null : file.key;
   return {
     id: index + 1,
     src: local || `${CDN_BASE_URL}${code}`,
     alt: `Jessi and Kheng photo ${index + 1}`,
+    key: key
   };
 });

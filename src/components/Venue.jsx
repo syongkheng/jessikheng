@@ -100,7 +100,7 @@ function Venue() {
     <Box id="venue" component="section">
       <Box className={classes.imageWrap}>
         <Box className={classes.topChip}>
-          <FloralSprig variant="leaf" className={classes.topChipSprig} />
+          <FloralSprig variant="olive" className={classes.topChipSprig} />
           <Typography variant="overline" className={classes.heading}>
             {t("venue.heading")}
           </Typography>
@@ -115,28 +115,29 @@ function Venue() {
           </Box>
         </Box>
       </Box>
-      {backviewPhoto && (
+      <br/>
+      {/* {backviewPhoto && (
         <Box className={classes.photoMat}>
           <LazyImage
             src={backviewPhoto.src}
             alt={backviewPhoto.alt}
             wrapperClassName={classes.photoFrame}
             placeholderHeight={420}
-            placeholderVariant="leaf"
+            placeholderVariant="fern"
           />
         </Box>
-      )}
-      {bridgePhoto && (
+      )} */}
+      {/* {bridgePhoto && (
         <Box className={classes.photoMat}>
           <LazyImage
             src={bridgePhoto.src}
             alt={bridgePhoto.alt}
             wrapperClassName={classes.photoFrame}
             placeholderHeight={420}
-            placeholderVariant="leaf"
+            placeholderVariant="fern"
           />
         </Box>
-      )}
+      )} */}
     </Box>
   );
 }

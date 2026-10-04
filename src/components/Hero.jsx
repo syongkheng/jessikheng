@@ -190,7 +190,7 @@ function Hero() {
           />
 
           <Box className={classes.bottomChip}>
-            <FloralSprig variant="bloom" className={classes.bottomChipSprig} />
+            <FloralSprig variant="rose" className={classes.bottomChipSprig} />
           </Box>
         </Box>
       )}

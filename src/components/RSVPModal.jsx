@@ -30,12 +30,7 @@ import FloralSprig from "./decor/FloralSprig.jsx";
 import LazyImage from "./LazyImage.jsx";
 import LanguageSwitcher from "./LanguageSwitcher.jsx";
 import { photos } from "../data/photos.js";
-import {
-  RSVP_ENDPOINT,
-  RSVP_PREFLIGHT_ENDPOINT,
-  RSVP_RECOVER_PIN_ENDPOINT,
-} from "../utils/rsvpApi.js";
-import { normalizePin } from "../utils/reservationId.js";
+import { RSVP_ENDPOINT, RSVP_PREFLIGHT_ENDPOINT } from "../utils/rsvpApi.js";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_ADDITIONAL_GUESTS = 8;
@@ -101,12 +96,16 @@ const useStyles = makeStyles((theme) => ({
     flex: "1 1 auto",
     minHeight: 0,
     overflowY: "auto",
-    padding: theme.spacing(4, 3, 3),
+    padding: theme.spacing(2, 3, 3),
     backgroundColor: "#fff",
   },
-  // Floral decor, the RSVP heading, and the language toggle all sit in one
-  // row — the heading grows to fill the middle so "RSVP" stays visually
-  // centered regardless of the flanking elements' widths.
+  languageRow: {
+    display: "flex",
+    justifyContent: "flex-end",
+    marginBottom: theme.spacing(1),
+  },
+  // Floral decor flanks the RSVP heading; the heading grows to fill the
+  // middle so "RSVP" stays visually centered.
   headingRow: {
     display: "flex",
     alignItems: "center",
@@ -321,9 +320,11 @@ const initialFormState = {
   contactNumber: "",
   attending: "",
   dietaryRestrictions: "",
-  meal: "",
+  meal: "regular",
   additionalGuestCount: 0,
   guestNames: [],
+  guestMeals: [],
+  guestEmails: [],
   message: "",
 };
 
@@ -343,19 +344,12 @@ function RSVPModal({ open, onClose, onViewStatus }) {
   const [submitError, setSubmitError] = useState("");
   const [infoMessage, setInfoMessage] = useState("");
   const [checkingRsvp, setCheckingRsvp] = useState(false);
-  // Existing-RSVP edit sub-step (within the lookup step): once the name is found
-  // to already have an RSVP, the guest must enter its PIN to edit it.
-  const [awaitingPin, setAwaitingPin] = useState(false);
-  const [existingHasEmail, setExistingHasEmail] = useState(false);
-  const [pinInput, setPinInput] = useState("");
-  // PIN that unlocked the existing RSVP being edited — the backend requires it
-  // to overwrite that RSVP, so it's sent with the final submit.
-  const [verifiedPin, setVerifiedPin] = useState(null);
-  const [pinError, setPinError] = useState("");
-  const [recovering, setRecovering] = useState(false);
+  // Set once the email lookup finds an existing RSVP — shows an inline notice
+  // on step 1; pressing Next again continues and the new response replaces it.
+  const [existingFound, setExistingFound] = useState(false);
   const rsvpPhoto = photos[0];
 
-  // Name is its own first step so the existing-RSVP lookup (which can
+  // Email is its own first step so the existing-RSVP lookup (which can
   // overwrite `attending` and every other field from the server) happens
   // before the guest ever sets those fields — otherwise a lookup triggered
   // by the same "Next" click that just captured their attending choice
@@ -383,6 +377,22 @@ function RSVPModal({ open, onClose, onViewStatus }) {
     });
   };
 
+  const handleGuestMealChange = (index) => (event) => {
+    setForm((prev) => {
+      const guestMeals = [...prev.guestMeals];
+      guestMeals[index] = event.target.value;
+      return { ...prev, guestMeals };
+    });
+  };
+
+  const handleGuestEmailChange = (index) => (event) => {
+    setForm((prev) => {
+      const guestEmails = [...prev.guestEmails];
+      guestEmails[index] = event.target.value;
+      return { ...prev, guestEmails };
+    });
+  };
+
   const adjustGuestCount = (delta) => {
     setForm((prev) => {
       const nextCount = Math.min(
@@ -391,21 +401,27 @@ function RSVPModal({ open, onClose, onViewStatus }) {
       );
       const guestNames = [...prev.guestNames];
       guestNames.length = nextCount;
+      const guestMeals = [...prev.guestMeals];
+      guestMeals.length = nextCount;
+      const guestEmails = [...prev.guestEmails];
+      guestEmails.length = nextCount;
       return {
         ...prev,
         additionalGuestCount: nextCount,
         guestNames: guestNames.map((n) => n ?? ""),
+        guestMeals: guestMeals.map((m) => m ?? "regular"),
+        guestEmails: guestEmails.map((e) => e ?? ""),
       };
     });
   };
 
   // Step-1 existence check. Throws on network/HTTP failure so the caller can
   // show a toast and keep the user on step 1.
-  const runPreflight = async (name) => {
+  const runPreflight = async (email) => {
     const response = await fetch(RSVP_PREFLIGHT_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ email }),
     });
     const body = await response.json().catch(() => null);
     if (!response.ok || body?.status !== "Ok") {
@@ -414,105 +430,23 @@ function RSVPModal({ open, onClose, onViewStatus }) {
     return body.data; // { exists, hasEmail }
   };
 
-  // Loads an existing RSVP for editing once name + PIN are both supplied.
-  // Returns the self-view object, or null when the PIN doesn't match. Throws on
-  // network/HTTP failure.
-  const loadExistingRsvp = async (name, pin) => {
-    const response = await fetch(
-      `${RSVP_ENDPOINT}?name=${encodeURIComponent(name)}&pin=${encodeURIComponent(pin)}`,
-    );
-    const body = await response.json().catch(() => null);
-    if (!response.ok || body?.status !== "Ok") {
-      throw new Error("lookup failed");
-    }
-    return body.data?.found ? body.data.rsvp : null;
-  };
-
-  const prefillFromRsvp = (rsvp) => {
-    const you = rsvp?.you ?? {};
-    const guestNames = Array.isArray(rsvp?.guestNames) ? rsvp.guestNames : [];
-    setForm((prev) => ({
-      ...prev,
-      name: you.name ?? prev.name,
-      email: you.email ?? "",
-      contactNumber: you.contactNumber ?? "",
-      attending: you.attending ? "yes" : "no",
-      dietaryRestrictions: you.dietaryRestrictions ?? "",
-      meal: you.mealPreference ?? "",
-      additionalGuestCount: guestNames.length,
-      guestNames,
-      message: you.message ?? "",
-    }));
-  };
-
-  const handleForgotPin = async () => {
-    const name = form.name.trim();
-    if (!name) return;
-    setRecovering(true);
-    try {
-      const response = await fetch(RSVP_RECOVER_PIN_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
-      });
-      const body = await response.json().catch(() => null);
-      if (!response.ok || body?.status !== "Ok") {
-        setSubmitError(t("rsvp.lookupFailed"));
-        return;
-      }
-      // Email on file → PIN sent; no email → tell them to contact the couple.
-      setInfoMessage(body.data?.sent ? t("rsvp.pinSent") : t("rsvp.contactCouple"));
-    } catch {
-      setSubmitError(t("rsvp.lookupFailed"));
-    } finally {
-      setRecovering(false);
-    }
-  };
-
-  // Drives the first step: existence check, then (if found) the PIN sub-step.
+  // Drives the first step: existence check. If the email already has an RSVP,
+  // show a notice and let the next press carry on to the details step.
   const handleLookupNext = async () => {
     if (!validateLookupStep()) return;
-    const name = form.name.trim();
-
-    // Sub-step: verify the PIN and load the existing RSVP for editing.
-    if (awaitingPin) {
-      const normalizedPin = normalizePin(pinInput);
-      if (!normalizedPin) {
-        setPinError(t("rsvp.errors.pinRequired"));
-        return;
-      }
-      setCheckingRsvp(true);
-      try {
-        const rsvp = await loadExistingRsvp(name, normalizedPin);
-        if (!rsvp) {
-          setPinError(t("rsvp.pinIncorrect"));
-          return;
-        }
-        prefillFromRsvp(rsvp);
-        setVerifiedPin(normalizedPin);
-        setInfoMessage(t("rsvp.foundExisting"));
-        setAwaitingPin(false);
-        setPinError("");
-        setErrors({});
-        setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
-      } catch {
-        setSubmitError(t("rsvp.lookupFailed"));
-      } finally {
-        setCheckingRsvp(false);
-      }
+    if (existingFound) {
+      setErrors({});
+      setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
       return;
     }
 
-    // First press: does this name already have an RSVP?
     setCheckingRsvp(true);
     try {
-      const { exists, hasEmail } = await runPreflight(name);
+      const { exists } = await runPreflight(form.email.trim());
       if (exists) {
-        setExistingHasEmail(hasEmail);
-        setAwaitingPin(true); // reveal the PIN sub-step; stay on step 1
+        setExistingFound(true); // stay on step 1 until they press Next again
         return;
       }
-      // New RSVP → carry on to the details step.
       setErrors({});
       setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
     } catch {
@@ -524,8 +458,10 @@ function RSVPModal({ open, onClose, onViewStatus }) {
 
   const validateLookupStep = () => {
     const nextErrors = {};
-    if (!form.name.trim()) {
-      nextErrors.name = t("rsvp.errors.nameRequired");
+    if (!form.email.trim()) {
+      nextErrors.email = t("rsvp.errors.emailRequired");
+    } else if (!EMAIL_PATTERN.test(form.email.trim())) {
+      nextErrors.email = t("rsvp.errors.emailInvalid");
     }
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
@@ -533,8 +469,8 @@ function RSVPModal({ open, onClose, onViewStatus }) {
 
   const validateDetailsStep = () => {
     const nextErrors = {};
-    if (form.email.trim() && !EMAIL_PATTERN.test(form.email.trim())) {
-      nextErrors.email = t("rsvp.errors.emailInvalid");
+    if (!form.name.trim()) {
+      nextErrors.name = t("rsvp.errors.nameRequired");
     }
     if (!form.attending) {
       nextErrors.attending = t("rsvp.errors.attendingRequired");
@@ -545,13 +481,20 @@ function RSVPModal({ open, onClose, onViewStatus }) {
 
   const validateEventStep = () => {
     const guestNameErrors = [];
+    const guestEmailErrors = [];
     for (let i = 0; i < form.additionalGuestCount; i++) {
       if (!(form.guestNames[i] || "").trim()) {
         guestNameErrors[i] = t("rsvp.errors.guestNameRequired");
       }
+      const guestEmail = (form.guestEmails[i] || "").trim();
+      if (guestEmail && !EMAIL_PATTERN.test(guestEmail)) {
+        guestEmailErrors[i] = t("rsvp.errors.emailInvalid");
+      }
     }
-    const nextErrors =
-      guestNameErrors.length > 0 ? { guestNames: guestNameErrors } : {};
+    const nextErrors = {
+      ...(guestNameErrors.length > 0 ? { guestNames: guestNameErrors } : {}),
+      ...(guestEmailErrors.length > 0 ? { guestEmails: guestEmailErrors } : {}),
+    };
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
@@ -571,12 +514,17 @@ function RSVPModal({ open, onClose, onViewStatus }) {
       return;
     }
     setErrors({});
-    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+    // Declining guests have no event details to fill in: skip it.
+    const skipEvent = stepName === "details" && form.attending === "no";
+    setCurrentStep((prev) =>
+      Math.min(prev + (skipEvent ? 2 : 1), steps.length - 1),
+    );
   };
 
   const handleBack = () => {
     setErrors({});
-    setCurrentStep((prev) => Math.max(prev - 1, 0));
+    const skipEvent = stepName === "message" && form.attending === "no";
+    setCurrentStep((prev) => Math.max(prev - (skipEvent ? 2 : 1), 0));
   };
 
   const handleSubmit = async (event) => {
@@ -595,7 +543,7 @@ function RSVPModal({ open, onClose, onViewStatus }) {
 
     const payload = {
       name: form.name.trim(),
-      email: form.email.trim() || null,
+      email: form.email.trim(),
       contactNumber: form.contactNumber.trim() || null,
       attending: form.attending === "yes",
       dietaryRestrictions: form.dietaryRestrictions.trim() || null,
@@ -603,15 +551,16 @@ function RSVPModal({ open, onClose, onViewStatus }) {
       message: form.message.trim() || null,
       additionalGuestContact:
         form.attending === "yes"
-          ? form.guestNames.slice(0, form.additionalGuestCount).map((name) => ({
-              name: name.trim(),
-              email: null,
-              contactNumber: null,
-              dietaryRestrictions: null,
-              mealPreference: null,
-            }))
+          ? form.guestNames
+              .slice(0, form.additionalGuestCount)
+              .map((name, index) => ({
+                name: name.trim(),
+                email: (form.guestEmails[index] || "").trim() || null,
+                contactNumber: null,
+                dietaryRestrictions: null,
+                mealPreference: form.guestMeals[index] || "regular",
+              }))
           : [],
-      ...(verifiedPin ? { pin: verifiedPin } : {}),
     };
 
     try {
@@ -644,12 +593,7 @@ function RSVPModal({ open, onClose, onViewStatus }) {
     setSubmitError("");
     setInfoMessage("");
     setCheckingRsvp(false);
-    setAwaitingPin(false);
-    setExistingHasEmail(false);
-    setPinInput("");
-    setPinError("");
-    setVerifiedPin(null);
-    setRecovering(false);
+    setExistingFound(false);
   };
 
   const handleCopyReservationId = async () => {
@@ -697,18 +641,20 @@ function RSVPModal({ open, onClose, onViewStatus }) {
       )}
 
       <Box className={classes.card}>
+        <Box className={classes.languageRow}>
+          <LanguageSwitcher />
+        </Box>
         <Box className={classes.headingRow}>
-          <FloralSprig variant="bloom" className={classes.headingSprig} />
+          <FloralSprig variant="blossom" className={classes.headingSprig} />
           <Typography variant="h4" className={classes.heading}>
             {t("rsvp.heading")}
           </Typography>
-          <FloralSprig variant="bloom" className={classes.headingSprig} />
-          <LanguageSwitcher />
+          <FloralSprig variant="blossom" className={classes.headingSprig} />
         </Box>
 
         {submitted ? (
           <Box className={classes.successWrap}>
-            <FloralSprig variant="bloom" className={classes.successSprig} />
+            <FloralSprig variant="rose" className={classes.successSprig} />
             <Typography variant="h3" className={classes.successHeading}>
               {t("rsvp.successHeading")}
             </Typography>
@@ -716,54 +662,10 @@ function RSVPModal({ open, onClose, onViewStatus }) {
               {t("rsvp.successMessage", { name: form.name })}
             </Typography>
 
-            {submittedPin && (
-              <Box className={classes.reservationCard}>
-                <FloralSprig
-                  variant="leaf"
-                  className={classes.reservationCardSprig}
-                />
-                <Typography variant="overline" className={classes.sectionLabel}>
-                  {t("rsvp.reservationIdLabel")}
-                </Typography>
-                <Box className={classes.reservationRow}>
-                  <Typography className={classes.reservationCode}>
-                    {submittedPin}
-                  </Typography>
-                  <IconButton
-                    size="small"
-                    onClick={handleCopyReservationId}
-                    aria-label={t("rsvp.copyReservationId")}
-                  >
-                    <ContentCopyIcon fontSize="small" />
-                  </IconButton>
-                </Box>
-                <Box
-                  component="span"
-                  className={`${classes.statusChip} ${
-                    form.attending === "yes"
-                      ? classes.statusChipYes
-                      : classes.statusChipNo
-                  }`}
-                >
-                  {form.attending === "yes"
-                    ? t("rsvp.attendingStatus")
-                    : t("rsvp.notAttendingStatus")}
-                </Box>
-              </Box>
-            )}
-
             <Box className={classes.successActions}>
               <Button
                 className={`${classes.wideButton} ${classes.containedRedButton}`}
                 variant="contained"
-                color="primary"
-                onClick={() => onViewStatus?.(submittedPin)}
-              >
-                {t("rsvp.viewStatus")}
-              </Button>
-              <Button
-                className={`${classes.wideButton} ${classes.outlinedRedButton}`}
-                variant="outlined"
                 color="primary"
                 onClick={handleReset}
               >
@@ -814,63 +716,22 @@ function RSVPModal({ open, onClose, onViewStatus }) {
                   </Typography>
 
                   <TextField
-                    label={t("rsvp.nameLabel")}
-                    value={form.name}
+                    label={t("rsvp.emailLabel")}
+                    type="email"
+                    value={form.email}
                     onChange={(event) => {
-                      handleChange("name")(event);
-                      // A verified PIN belongs to the name it was checked against.
-                      setVerifiedPin(null);
-                      // Editing the name invalidates any in-progress PIN step.
-                      if (awaitingPin) {
-                        setAwaitingPin(false);
-                        setPinInput("");
-                        setPinError("");
-                      }
+                      handleChange("email")(event);
+                      // A found RSVP belongs to the email it was checked against.
+                      setExistingFound(false);
                     }}
-                    error={Boolean(errors.name)}
-                    helperText={errors.name}
+                    error={Boolean(errors.email)}
+                    helperText={errors.email}
                     required
                     disabled={checkingRsvp}
                   />
 
-                  {awaitingPin && (
-                    <>
-                      <Typography
-                        variant="body2"
-                        className={classes.subheading}
-                      >
-                        {t("rsvp.existingFoundEnterPin")}
-                      </Typography>
-
-                      <TextField
-                        label={t("rsvp.pinLabel")}
-                        value={pinInput}
-                        onChange={(event) => {
-                          setPinInput(event.target.value);
-                          if (pinError) setPinError("");
-                        }}
-                        error={Boolean(pinError)}
-                        helperText={pinError}
-                        inputProps={{ inputMode: "numeric", maxLength: 4 }}
-                        disabled={checkingRsvp}
-                      />
-
-                      {existingHasEmail ? (
-                        <Button
-                          type="button"
-                          variant="text"
-                          color="primary"
-                          onClick={handleForgotPin}
-                          disabled={recovering || checkingRsvp}
-                        >
-                          {recovering ? t("rsvp.sending") : t("rsvp.forgotPin")}
-                        </Button>
-                      ) : (
-                        <Typography variant="caption" color="textSecondary">
-                          {t("rsvp.contactCouple")}
-                        </Typography>
-                      )}
-                    </>
+                  {existingFound && (
+                    <Alert severity="info">{t("rsvp.existingFoundNotice")}</Alert>
                   )}
                 </>
               )}
@@ -885,12 +746,12 @@ function RSVPModal({ open, onClose, onViewStatus }) {
                   </Typography>
 
                   <TextField
-                    label={t("rsvp.emailLabel")}
-                    type="email"
-                    value={form.email}
-                    onChange={handleChange("email")}
-                    error={Boolean(errors.email)}
-                    helperText={errors.email}
+                    label={t("rsvp.nameLabel")}
+                    value={form.name}
+                    onChange={handleChange("name")}
+                    error={Boolean(errors.name)}
+                    helperText={errors.name}
+                    required
                   />
 
                   <TextField
@@ -930,24 +791,25 @@ function RSVPModal({ open, onClose, onViewStatus }) {
               {stepName === "event" && (
                 <>
                   <TextField
-                    label={t("rsvp.dietaryRestrictionsLabel")}
-                    value={form.dietaryRestrictions}
-                    onChange={handleChange("dietaryRestrictions")}
-                  />
-
-                  <TextField
                     select
                     label={t("rsvp.mealLabel")}
                     value={form.meal}
                     onChange={handleChange("meal")}
+                    required={true}
                   >
-                    <MenuItem value="">—</MenuItem>
+                    {" "}
                     <MenuItem value="regular">{t("rsvp.mealRegular")}</MenuItem>
                     <MenuItem value="vegetarian">
                       {t("rsvp.mealVegetarian")}
                     </MenuItem>
                     <MenuItem value="halal">{t("rsvp.mealHalal")}</MenuItem>
                   </TextField>
+
+                  {/* <TextField
+                    label={t("rsvp.dietaryRestrictionsLabel")}
+                    value={form.dietaryRestrictions}
+                    onChange={handleChange("dietaryRestrictions")}
+                  /> */}
 
                   <Divider className={classes.divider} />
 
@@ -994,17 +856,50 @@ function RSVPModal({ open, onClose, onViewStatus }) {
                       {Array.from(
                         { length: form.additionalGuestCount },
                         (_, index) => (
-                          <TextField
-                            key={index}
-                            label={t("rsvp.guestNameLabel", {
-                              number: index + 2,
-                            })}
-                            value={form.guestNames[index] || ""}
-                            onChange={handleGuestNameChange(index)}
-                            error={Boolean(errors.guestNames?.[index])}
-                            helperText={errors.guestNames?.[index]}
-                            required
-                          />
+                          <Box key={index} className={classes.guestFields}>
+                            {index > 0 && <Divider className={classes.divider} />}
+                            <Typography
+                              variant="overline"
+                              className={classes.sectionLabel}
+                            >
+                              {t("rsvp.guestHeading", { number: index + 2 })}
+                            </Typography>
+                            <TextField
+                              label={t("rsvp.guestNameLabel")}
+                              value={form.guestNames[index] || ""}
+                              onChange={handleGuestNameChange(index)}
+                              error={Boolean(errors.guestNames?.[index])}
+                              helperText={errors.guestNames?.[index]}
+                              required
+                            />
+                            <TextField
+                              label={t("rsvp.guestEmailLabel")}
+                              type="email"
+                              value={form.guestEmails[index] || ""}
+                              onChange={handleGuestEmailChange(index)}
+                              error={Boolean(errors.guestEmails?.[index])}
+                              helperText={errors.guestEmails?.[index]}
+                            />
+                            <TextField
+                              select
+                              label={t("rsvp.guestMealLabel")}
+                              value={form.guestMeals[index] || "regular"}
+                              onChange={handleGuestMealChange(index)}
+                              error={Boolean(errors.guestMeals?.[index])}
+                              helperText={errors.guestMeals?.[index]}
+                              required
+                            >
+                              <MenuItem value="regular">
+                                {t("rsvp.mealRegular")}
+                              </MenuItem>
+                              <MenuItem value="vegetarian">
+                                {t("rsvp.mealVegetarian")}
+                              </MenuItem>
+                              <MenuItem value="halal">
+                                {t("rsvp.mealHalal")}
+                              </MenuItem>
+                            </TextField>
+                          </Box>
                         ),
                       )}
                     </Box>

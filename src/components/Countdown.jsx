@@ -135,7 +135,7 @@ function Countdown() {
           {remaining ? (
             <>
               <Box className={classes.headingChip}>
-                <FloralSprig variant="leaf" className={classes.headingSprig} />
+                <FloralSprig variant="buds" className={classes.headingSprig} />
                 {/* <Typography variant="h3" className={classes.heading}>
                   {t('countdown.heading')}
                 </Typography> */}
