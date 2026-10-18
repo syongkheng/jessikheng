@@ -25,7 +25,8 @@ function readRoute() {
 }
 
 // `q` controls the RSVP UI, read from either `/?q=1` or `/#?q=1`:
-//   q=0 (or missing) → RSVP footer shown
+//   q missing        → RSVP footer hidden (default page)
+//   q=0              → RSVP footer shown
 //   q=1              → RSVP footer hidden
 //   q=2              → RSVP footer shown and the RSVP modal opens straight away
 function readRsvpMode(route) {
@@ -33,7 +34,7 @@ function readRsvpMode(route) {
   const q =
     new URLSearchParams(hashQuery).get('q') ??
     new URLSearchParams(window.location.search).get('q')
-  return q === '2' ? 2 : q === '1' ? 1 : 0
+  return q === '2' ? 2 : q === '0' ? 0 : 1
 }
 
 // Reserves space at the bottom equal to FloatingRsvpButton's height so the
