@@ -15,6 +15,10 @@ const files = [
   "be8af780",
   { code: "", local:"/background/bride.png", key:"bride-kunming" },
   { code: "", local:"/background/groom.png", key:"groom-kunming" },
+  { code: "", local:"/background/2016-j16.jpg", key:"2016-j16" },
+  { code: "", local:"/background/2017-j17.jpg", key:"2017-j17" },
+  { code: "", local:"/background/2018-bus.jpg", key:"2018-bus" },
+  { code: "", local:"/background/d14.jpg", key:"2014-d14" },
 ];
 
 export const photos = files.map((file, index) => {

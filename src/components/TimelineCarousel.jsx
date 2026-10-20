@@ -300,6 +300,7 @@ function TimelineCarousel() {
               src={moment.photo.src}
               alt={moment.photo.alt}
               className={classes.slideImage}
+              style={moment.fit ? { objectFit: moment.fit } : undefined}
             />
           </Box>
         ))}
