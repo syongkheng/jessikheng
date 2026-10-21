@@ -12,17 +12,17 @@ function returnPhotoBasedOnKey(key) {
 export const timelineMoments = [
   {
     year: 2024,
-    photo: returnPhotoBasedOnKey("bride-kunming"),
+    photo: returnPhotoBasedOnKey("2024-ring"),
     caption: "Partners for life.",
   }, // citigo
   {
     year: 2018,
-    photo: returnPhotoBasedOnKey("groom-kunming"),
+    photo: returnPhotoBasedOnKey("2018-bus"),
     caption: "She fell right beside him.",
   }, // bus ok
   {
     year: 2017,
-    photo: returnPhotoBasedOnKey("2016-j16"),
+    photo: returnPhotoBasedOnKey("2017-j17"),
     caption: "He fell first.",
   }, // no1 ok
   {
