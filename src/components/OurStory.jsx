@@ -57,7 +57,7 @@ function OurStory() {
             {t("story.heading")}
           </Typography>
           <TimelineCarousel />
-          <Typography variant="body1" className={classes.paragraph}>
+          {/* <Typography variant="body1" className={classes.paragraph}>
             {t("story.paragraph1")}
           </Typography>
           <Typography variant="body1" className={classes.paragraph}>
@@ -71,7 +71,7 @@ function OurStory() {
           </Typography>
           <Typography variant="body1" className={classes.paragraph}>
             {t("story.paragraph5")}
-          </Typography>
+          </Typography> */}
         </Box>
       </Box>
     </div>

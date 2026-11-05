@@ -20,6 +20,8 @@ const files = [
   { code: "", local:"/background/2018-bus.jpg", key:"2018-bus" },
   { code: "", local:"/background/d14.jpg", key:"2014-d14" },
   { code: "", local:"/background/2024.jpg", key:"2024-ring" },
+  { code: "", local:"/background/2021.jpg", key:"2021-house-studio" },
+  { code: "", local:"/background/2027.jpg", key:"2027-pws" },
 ];
 
 export const photos = files.map((file, index) => {
