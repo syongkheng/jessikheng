@@ -86,8 +86,6 @@ function TheCouple() {
   const bridePhoto = photos.filter((p) => p.key === "bride-kunming")[0];
   const backviewPhoto = undefined // photos[3];
 
-  console.log("photos", photos);
-
   return (
     <div>
       {backviewPhoto && (
