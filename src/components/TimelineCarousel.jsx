@@ -321,7 +321,7 @@ function TimelineCarousel() {
       </Box>
       <Box className={classes.captionBox}>
         <Typography className={classes.caption}>
-          {timelineMoments[index].caption}
+          {t(timelineMoments[index].captionKey)}
         </Typography>
       </Box>
     </Box>
