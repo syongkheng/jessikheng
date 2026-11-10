@@ -1,6 +1,7 @@
 export const API_BASE_URL = import.meta.env.DEV
   ? "http://localhost:3000"
   : "https://api.awense.com";
+export const VISIT_ENDPOINT = `${API_BASE_URL}/wedding/visit`;
 export const RSVP_ENDPOINT = `${API_BASE_URL}/wedding/rsvp`;
 export const RSVP_STATUS_ENDPOINT = `${RSVP_ENDPOINT}/status`;
 export const RSVP_PREFLIGHT_ENDPOINT = `${RSVP_ENDPOINT}/preflight`;

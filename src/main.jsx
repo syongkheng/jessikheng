@@ -7,6 +7,9 @@ import './index.css'
 import './i18n/index.js'
 import App from './App.jsx'
 import PhoneFrame from './components/PhoneFrame.jsx'
+import { pingVisit } from './utils/visitPing.js'
+
+pingVisit()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
