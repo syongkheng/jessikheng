@@ -8,8 +8,10 @@ import './i18n/index.js'
 import App from './App.jsx'
 import PhoneFrame from './components/PhoneFrame.jsx'
 import { pingVisit } from './utils/visitPing.js'
+import { startPageTracking } from './utils/analytics.js'
 
 pingVisit()
+startPageTracking()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
