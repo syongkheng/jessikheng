@@ -108,6 +108,7 @@
     "successMessage": "Thank you, {{name}}! Your RSVP has been recorded. You should receive an email with your response shortly, do reach out if you did not receive the email.",
     "resubmit": "Submit another response",
     "submitError": "Something went wrong sending your RSVP. Please try again.",
+    "privacyNotice": "The information you provide is used only to contact you about wedding attendance, and will be permanently deleted after the event.",
     "existingFoundNotice": "We found an existing RSVP for this email. You can submit a new response below. Your latest response will replace your previous response.",
     "lookupFailed": "Something went wrong checking your RSVP. Please try again.",
     "closeLabel": "Close RSVP form",
@@ -142,6 +143,8 @@
     }
   },
   "footer": {
-    "tagline": "We can't wait to celebrate with you."
+    "tagline": "We can't wait to celebrate with you.",
+    "credit": "Designed and developed by Jessica and Yong Kheng",
+    "contact": "Questions? Email us at"
   }
 }

@@ -108,6 +108,7 @@
     "successMessage": "谢谢你，{{name}}！我们已收到您的回复。",
     "resubmit": "再次提交",
     "submitError": "提交回复时发生错误，请稍后再试。",
+    "privacyNotice": "您提供的信息仅用于就婚礼出席事宜与您联系，并将在婚礼结束后永久删除。",
     "existingFoundNotice": "我们找到了此邮箱的现有回复。您可以在下方提交新的回复，您的最新回复将取代之前的回复。",
     "lookupFailed": "查询回复时发生错误，请重试。",
     "closeLabel": "关闭回复表单",
@@ -142,6 +143,8 @@
     }
   },
   "footer": {
-    "tagline": "我们迫不及待想与您共同庆祝。"
+    "tagline": "我们迫不及待想与您共同庆祝。",
+    "credit": "由 Jessica 和 Yong Kheng 设计与开发",
+    "contact": "如有疑问，请发邮件至"
   }
 }

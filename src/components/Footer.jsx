@@ -12,7 +12,22 @@ const useStyles = makeStyles((theme) => ({
   names: {
     marginBottom: theme.spacing(1),
   },
+  credit: {
+    color: theme.palette.text.secondary,
+    opacity: 0.8,
+    letterSpacing: '0.04em',
+  },
+  contact: {
+    display: 'block',
+    marginTop: theme.spacing(0.5),
+  },
+  contactLink: {
+    color: 'inherit',
+    textDecoration: 'underline',
+  },
 }))
+
+const CONTACT_EMAIL = 'jessikheng@gmail.com'
 
 function Footer() {
   const classes = useStyles()
@@ -21,6 +36,18 @@ function Footer() {
   return (
     <Box component="footer" className={classes.root}>
       {/* <Typography variant="body1">{t('footer.tagline')}</Typography> */}
+      <Typography variant="caption" className={classes.credit}>
+        {t('footer.credit')}
+      </Typography>
+      <Typography
+        variant="caption"
+        className={`${classes.credit} ${classes.contact}`}
+      >
+        {t('footer.contact')}{' '}
+        <a href={`mailto:${CONTACT_EMAIL}`} className={classes.contactLink}>
+          {CONTACT_EMAIL}
+        </a>
+      </Typography>
     </Box>
   )
 }

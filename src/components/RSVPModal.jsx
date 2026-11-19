@@ -129,6 +129,11 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     color: theme.palette.text.secondary,
   },
+  privacyNote: {
+    display: "block",
+    textAlign: "center",
+    color: theme.palette.text.secondary,
+  },
   deadlineDate: {
     display: "block",
     textAlign: "center",
@@ -733,6 +738,10 @@ function RSVPModal({ open, onClose, onViewStatus }) {
                   {existingFound && (
                     <Alert severity="info">{t("rsvp.existingFoundNotice")}</Alert>
                   )}
+
+                  <Typography variant="caption" className={classes.privacyNote}>
+                    {t("rsvp.privacyNotice")}
+                  </Typography>
                 </>
               )}
 
